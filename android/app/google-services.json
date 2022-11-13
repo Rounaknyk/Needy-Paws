@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "736112389746",
+    "project_id": "needy-paws",
+    "storage_bucket": "needy-paws.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736112389746:android:4544f5dbf75d31ba471ceb",
+        "android_client_info": {
+          "package_name": "com.example.needy_paw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "736112389746-ipqc6rppdqsiqfgigtakunsj7vs3moar.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzZ96VEhUyslwfeIMPq-OLvDNZbk69NLw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "736112389746-ipqc6rppdqsiqfgigtakunsj7vs3moar.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "736112389746-uqf794um320q7ajf2k55cu3sfgh89u71.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.needyPaw"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

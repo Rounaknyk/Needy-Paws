@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>736112389746-uqf794um320q7ajf2k55cu3sfgh89u71.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.736112389746-uqf794um320q7ajf2k55cu3sfgh89u71</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCZP2YfbeFuW_5mm8sNtyWbcwTceQIWhJU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>736112389746</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.needyPaw</string>
+	<key>PROJECT_ID</key>
+	<string>needy-paws</string>
+	<key>STORAGE_BUCKET</key>
+	<string>needy-paws.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:736112389746:ios:774c615ec43061ec471ceb</string>
+</dict>
+</plist>
