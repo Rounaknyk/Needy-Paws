@@ -82,7 +82,7 @@ class _AdoptScreenState extends State<AdoptScreen> {
             : Colors.blue.shade100.withOpacity(0.5),
         strokeColor: isInfected
             ? Colors.red.shade100.withOpacity(0.1)
-            : Colors.blue.shade100.withOpacity(0.1),
+            : Colors.blue.shade100.withOpacity(1.1),
       ),
     );
   }
