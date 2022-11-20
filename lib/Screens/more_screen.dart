@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:needy_paw/Screens/clinics_screen.dart';
 import 'package:needy_paw/Screens/community_chat_screen.dart';
+import 'package:needy_paw/Screens/rescuer_screen.dart';
 
 class MoreScreen extends StatelessWidget {
 
@@ -32,7 +33,7 @@ class MoreScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ReusableMoreCard(text: "Rescuer", func: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => CommunityChatScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => RescuerScreen()));
                     }),
                     SizedBox(width: 20,),
                     ReusableMoreCard(text: "Food", func: (){

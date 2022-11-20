@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -27,7 +29,9 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
   String des = "";
   String infection = "none";
   String manual_address = "none";
+  String phoneNumber = "none";
   late String vname, cname, uid;
+  File? fi;
   String url =
       "https://firebasestorage.googleapis.com/v0/b/needy-paws.appspot.com/o/Clinics%2Fclinic.png?alt=media&token=bd396ada-54e4-4e01-9bdc-d746e916f0e2";
   Widget textOrImage = Text("Tap here to upload");
@@ -39,29 +43,63 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
 
   Future uploadData() async {
-    if(auth.currentUser != null){
+    if (auth.currentUser != null) {
       uid = auth.currentUser!.uid;
       final upload = await firestore.collection("Clinics").doc().set({
-        "vname" : vname,
-        "cname" : cname,
-        "manual_address" : manual_address,
-        "latitude" : ltlg.lat,
-        "longitude" : ltlg.lng,
-        "url" : url
+        "vname": vname,
+        "cname": cname,
+        "manual_address": manual_address,
+        "latitude": ltlg.lat,
+        "longitude": ltlg.lng,
+        "url": url,
+        "phoneNumber": phoneNumber
       });
     }
+  }
+
+  Future uploadPost() async {
+    final data = storage.ref("clinics").child(DateTime.now().millisecondsSinceEpoch.toString());
+
+    uploadTask = data.putFile(fi!);
+
+    final snapshot = await uploadTask?.whenComplete(() => (){});
+
+    url = (await snapshot?.ref.getDownloadURL())!;
+    print(url);
 
   }
 
-  selectImage() {}
+  Future selectImage() async {
+    try {
+      final files =
+      await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+      if (files == null) {
+        print("object null");
+        return;
+      }
+      fi = File(files.path);
+      setState(() {
+        textOrImage = Image.file(fi!);
+      });
+    } catch (e) {
+      print(e);
+    }
 
+    // FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.media);
+    // print(result);
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Add your clinic"),),
+      appBar: AppBar(
+        title: Text("Add your clinic"),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          uploadPost();
           uploadData();
+          Navigator.pop(context);
         },
         child: Icon(Icons.pets),
       ),
@@ -71,9 +109,42 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20,),
-              Align(child: Text("Vet's details", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),), alignment: AlignmentDirectional.topStart,),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectImage();
+                      });
+                      // selectPic();
+                    },
+                    child: Card(
+                      borderOnForeground: true,
+                      color: Colors.white,
+                      child: Center(
+                        child: textOrImage,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Align(
+                child: Text(
+                  "Vet's details",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                alignment: AlignmentDirectional.topStart,
+              ),
+              SizedBox(
+                height: 10,
+              ),
               ReusabletTextField(
                 getValue: (newValue) {
                   setState(() {
@@ -83,9 +154,32 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
                 hintText: "Vet's name",
                 icon: Icons.person,
               ),
-              SizedBox(height: 20,),
-              Align(child: Text("Clinic's details", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),), alignment: AlignmentDirectional.topStart,),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
+              ReusabletTextField(
+                getValue: (newValue) {
+                  setState(() {
+                    phoneNumber = newValue.toString();
+                  });
+                },
+                hintText: "Phone number",
+                icon: Icons.call,
+                textInputType: TextInputType.phone,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Align(
+                child: Text(
+                  "Clinic's details",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                alignment: AlignmentDirectional.topStart,
+              ),
+              SizedBox(
+                height: 10,
+              ),
               ReusabletTextField(
                 getValue: (newValue) {
                   setState(() {
@@ -95,7 +189,9 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
                 hintText: "Clinic name",
                 icon: Icons.other_houses,
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               ReusabletTextField(
                 getValue: (newValue) {
                   setState(() {
@@ -105,7 +201,9 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
                 hintText: "Clinic's manual address",
                 icon: Icons.location_on,
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               GestureDetector(
                 onTap: () async {
                   ltlg = await Navigator.push(

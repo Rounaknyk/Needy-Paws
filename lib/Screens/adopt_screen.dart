@@ -5,6 +5,7 @@ import 'package:needy_paw/Models/post_model.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
 import 'package:needy_paw/MyWidgets/reusable_icon_text.dart';
 import 'package:needy_paw/Screens/chat_screen.dart';
+import 'package:needy_paw/Screens/locate_screen.dart';
 import 'package:needy_paw/constants.dart';
 import 'package:needy_paw/my_routes.dart';
 
@@ -165,7 +166,7 @@ class _AdoptScreenState extends State<AdoptScreen> {
                             ReusableButton(
                               text: "Locate",
                               func: () {
-
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => LocateScreen(ltlg: widget.pm.ltlg)));
                               },
                             ),
                           ],

@@ -33,7 +33,8 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
             cname: clinic["cname"],
             manual_address: clinic["manual_address"],
             ltlg: Ltlg(clinic["latitude"], clinic["longitude"]),
-            url: clinic["url"]);
+            url: clinic["url"],
+            phoneNumber: clinic["phoneNumber"]);
         clinicList.add(
           ClinicCard(
             cname: cm.cname,
@@ -41,6 +42,7 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
             manual_address: cm.manual_address,
             url: cm.url,
             ltlg: cm.ltlg,
+            phoneNumber: cm.phoneNumber,
           ),
         );
         cList.add(cm);

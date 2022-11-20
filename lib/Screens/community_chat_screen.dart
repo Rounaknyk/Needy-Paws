@@ -19,6 +19,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   late String role, senderUid, name;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
+  ScrollController _scrollController = new ScrollController();
 
   sendMsg(){
     firestore.collection("Community").doc(DateTime.now().millisecondsSinceEpoch.toString().toString()).set(
@@ -32,6 +33,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     );
 
     controller.clear();
+    // _needsScroll = true;
   }
 
   getMyData() async {
@@ -51,10 +53,39 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     // TODO: implement initState
     super.initState();
     getMyData();
+
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   if (_scrollController.hasClients) {
+    //     _scrollController.animateTo(
+    //         _scrollController.position.maxScrollExtent,
+    //         duration: Duration(milliseconds: 200),
+    //         curve: Curves.easeInOut
+    //     );
+    //   }
+    // });
   }
+  //
+  // bool _needsScroll = false;
+  //
+  // _scrollToEnd() async {
+  //   _scrollController.animateTo(
+  //       _scrollController.position.maxScrollExtent,
+  //       duration: Duration(milliseconds: 200),
+  //       curve: Curves.easeInOut
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
+    //
+    // if (_needsScroll) {
+    //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //     return _scrollToEnd();
+    //   });
+    //   _needsScroll = false;
+    //
+    // }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Animal Lovers Community"),
@@ -82,6 +113,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 10),
                       child: ListView(
+                        controller: _scrollController,
                         children: texts,
                       ),
                     ),

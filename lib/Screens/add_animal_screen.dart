@@ -38,14 +38,23 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   late File image;
   late PostModel pm;
   ImagePicker picker = ImagePicker();
-  File? files;
+  File? fi;
   FirebaseAuth auth = FirebaseAuth.instance;
 
   uploadPost() async {
-    final data = storage.ref().child("cool");
-    uploadTask = data.putFile(file);
-    final snapshot = await uploadTask?.whenComplete(() => () {});
-    url = (await snapshot?.ref.getDownloadURL())!;
+    try {
+      final data = storage.ref().child("posts").child(DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString());
+      uploadTask = data.putFile(fi!);
+      final snapshot = await uploadTask?.whenComplete(() => () {});
+      url = (await snapshot?.ref.getDownloadURL())!;
+      print(url);
+    }
+    catch(e){
+      print("Excpppppppp $url");
+    }
   }
   
   getNameUid() async {
@@ -102,8 +111,10 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
         print("object null");
         return;
       }
-      File fi = File(files.path);
-      print(fi);
+      fi = File(files.path);
+      setState(() {
+        textOrImage = Image.file(fi!);
+      });
     } catch (e) {
       print(e);
     }
@@ -117,6 +128,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          uploadPost();
           uploadData();
         },
         child: Icon(Icons.pets),
@@ -146,7 +158,6 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                     onTap: () {
                       setState(() {
                         selectImage();
-                        textOrImage = Image.network(url);
                       });
                       // selectPic();
                     },

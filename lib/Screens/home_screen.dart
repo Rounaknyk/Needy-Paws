@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if(widget.myData.role == "vet")
           Navigator.pushNamed(context, MyRoutes.add_clinic);
           else
-          Navigator.pushNamed(context, MyRoutes.add_animal);
+          Navigator.pushNamed(context, MyRoutes.add_clinic);
         },
         child: Icon(Icons.pets),
       ) : null,
@@ -74,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
               List<ReusableCard> posts = [];
               for(var post in postData!){
                 // cm = ChatModel(msg["text"], msg["time"], msg["isMe"], msg["senderUid"], msg["myUid"]);
+                if(auth.currentUser!.uid != post["uid"])
                 posts.add(ReusableCard(pm: PostModel(url: post["url"], des: post["des"], ltlg: Ltlg(post["lat"], post["lng"]), time: post["time"], infection: post["infection"], manual_address: post["manual_address"], name: post["name"], uid: post["uid"])));
                 // print("$senderUid \n ${msg["senderUid"]}");
               }

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:needy_paw/Models/Ltlg.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
@@ -6,12 +8,44 @@ import 'package:needy_paw/Screens/adopt_screen.dart';
 
 import '../Models/post_model.dart';
 
-class ReusableCard extends StatelessWidget {
-  ReusableCard({required this.pm});
+class ReusableCard extends StatefulWidget {
+  ReusableCard({required this.pm, this.isYours = true});
   late PostModel pm;
+  bool isYours = true;
+
+  @override
+  State<ReusableCard> createState() => _ReusableCardState();
+}
+
+class _ReusableCardState extends State<ReusableCard> {
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.isYours = (auth.currentUser!.uid == widget.pm.uid);
+  }
+
+  deletePost() async {
+    String uid = auth.currentUser!.uid;
+    if (widget.pm.uid == uid) {
+      final posts = await firestore.collection("Posts").get();
+      for (var post in posts.docs) {
+        if (post["lat"] == widget.pm.ltlg.lat && post["lng"] == widget.pm.ltlg.lng) {
+          await firestore.collection("Posts").doc(post.id).delete();
+          setState(() {
+          });
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return Stack(
       children: [
         Padding(
@@ -33,12 +67,12 @@ class ReusableCard extends StatelessWidget {
                     Align(
                         alignment: AlignmentDirectional.centerStart,
                         child: Text(
-                          pm.name,
+                          widget.pm.name,
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         )),
                     Text(
-                      "at ${pm.time}",
+                      "at ${widget.pm.time}",
                       style: TextStyle(color: Colors.grey[700], fontSize: 12),
                     ),
                     SizedBox(
@@ -61,19 +95,19 @@ class ReusableCard extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
-                    ReusableIconText(text: pm.des, icon: Icons.description),
+                    ReusableIconText(text: widget.pm.des, icon: Icons.description),
                     SizedBox(
                       height: 10,
                     ),
                     ReusableIconText(
-                        text: pm.manual_address, icon: Icons.location_city),
+                        text: widget.pm.manual_address, icon: Icons.location_city),
                     SizedBox(
                       height: 10,
                     ),
                     ReusableIconText(
-                        text: pm.infection,
+                        text: widget.pm.infection,
                         icon: Icons.coronavirus,
-                        color: (pm.infection != "none")
+                        color: (widget.pm.infection != "none")
                             ? Colors.red
                             : Colors.black),
                     SizedBox(
@@ -86,9 +120,21 @@ class ReusableCard extends StatelessWidget {
           ),
         ),
         Positioned(
-          child: ReusableButton(text: "Adopt", func: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => AdoptScreen(pm: pm)));
-          }),
+          child: widget.isYours
+              ? ReusableButton(
+                  text: "Delete",
+                  color: Color(0XFFDE4E4F),
+                  func: () {
+                    deletePost();
+                  })
+              : ReusableButton(
+                  text: "Adopt",
+                  func: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AdoptScreen(pm: widget.pm)));
+                  }),
           bottom: 30,
           right: 30,
         ),

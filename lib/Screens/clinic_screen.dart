@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:needy_paw/Models/clinic_model.dart';
@@ -32,8 +33,8 @@ class _ClinicScreenState extends State<ClinicScreen> {
 
   }
 
-  callNumber() async {
-    await FlutterPhoneDirectCaller.callNumber("919322942635");
+  callNumber(String number) async {
+    await FlutterPhoneDirectCaller.callNumber("91$number");
   }
 
   @override
@@ -85,12 +86,27 @@ class _ClinicScreenState extends State<ClinicScreen> {
                           widget.cm.manual_address,
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey[900]),
                         ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              widget.cm.phoneNumber,
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey[900]),
+                            ),
+                            SizedBox(width: 5,),
+                            GestureDetector(child: Icon(Icons.copy, size: 15,), onTap: () async {
+                                Clipboard.setData(ClipboardData(text: widget.cm.phoneNumber));
+                            },),
+                          ],
+                        )
                       ],
                     ),
                     CircleAvatar(
                       backgroundColor: Colors.blueAccent,
                       child: IconButton(icon: Icon(Icons.call, color: Colors.white,), onPressed: () async {
-                        callNumber();
+                        callNumber(widget.cm.phoneNumber);
                       },),
                     ),
                   ],

@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:needy_paw/Models/clinic_model.dart';
-import 'package:needy_paw/MyWidgets/reusable_button.dart';
-import 'package:needy_paw/Screens/clinic_screen.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:needy_paw/Models/rescuer_model.dart';
 
 import '../Models/Ltlg.dart';
+import '../Models/clinic_model.dart';
+import 'reusable_button.dart';
+import '../Screens/clinic_screen.dart';
 
-class ClinicCard extends StatelessWidget {
-  ClinicCard(
-      {required this.cname,
-      required this.vname,
-      required this.manual_address,
-      required this.url,
-      required this.ltlg,
-      required this.phoneNumber});
-  late String cname, vname, manual_address, url, phoneNumber;
-  late Ltlg ltlg;
+class RescuerCard extends StatefulWidget {
+  RescuerCard(
+      {required this.rm});
+  late RescuerModel rm;
+
+  @override
+  State<RescuerCard> createState() => _RescuerCardState();
+}
+
+class _RescuerCardState extends State<RescuerCard> {
+  Future callNumber(phoneNumber) async {
+    await FlutterPhoneDirectCaller.callNumber("+91$phoneNumber");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +38,10 @@ class ClinicCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.network(url),
+                CircleAvatar(
+                  radius: 30,
+                  child: Icon(Icons.person, color: Colors.white, size: 40,),
+                ),
                 Expanded(
                   flex: 4,
                   child: Padding(
@@ -42,34 +50,30 @@ class ClinicCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          cname,
+                          widget.rm.name,
                           style: TextStyle(
                               fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          manual_address,
+                          widget.rm.manual_address,
                           style: TextStyle(fontSize: 13),
                         ),
                       ],
                     ),
                   ),
                 ),
-                ReusableButton(
-                    text: "Check",
-                    func: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ClinicScreen(
-                                    cm: ClinicModel(
-                                        vname: vname,
-                                        cname: cname,
-                                        manual_address: manual_address,
-                                        ltlg: ltlg,
-                                        phoneNumber: phoneNumber,
-                                        url: url,),
-                                  )));
-                    }),
+                CircleAvatar(
+                  backgroundColor: Colors.blueAccent,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.call,
+                      color: Colors.white,
+                    ),
+                    onPressed: () async {
+                      callNumber(widget.rm.phoneNumber);
+                    },
+                  ),
+                ),
               ],
             ),
           ),
