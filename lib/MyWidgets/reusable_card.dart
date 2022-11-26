@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/Ltlg.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
 import 'package:needy_paw/MyWidgets/reusable_icon_text.dart';
@@ -18,14 +20,15 @@ class ReusableCard extends StatefulWidget {
 }
 
 class _ReusableCardState extends State<ReusableCard> {
-
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
+  bool loaded = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    print(widget.pm.url);
     widget.isYours = (auth.currentUser!.uid == widget.pm.uid);
   }
 
@@ -34,10 +37,10 @@ class _ReusableCardState extends State<ReusableCard> {
     if (widget.pm.uid == uid) {
       final posts = await firestore.collection("Posts").get();
       for (var post in posts.docs) {
-        if (post["lat"] == widget.pm.ltlg.lat && post["lng"] == widget.pm.ltlg.lng) {
+        if (post["lat"] == widget.pm.ltlg.lat &&
+            post["lng"] == widget.pm.ltlg.lng) {
           await firestore.collection("Posts").doc(post.id).delete();
-          setState(() {
-          });
+          setState(() {});
         }
       }
     }
@@ -45,7 +48,6 @@ class _ReusableCardState extends State<ReusableCard> {
 
   @override
   Widget build(BuildContext context) {
-
     return Stack(
       children: [
         Padding(
@@ -65,12 +67,13 @@ class _ReusableCardState extends State<ReusableCard> {
                       height: 10,
                     ),
                     Align(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: Text(
-                          widget.pm.name,
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        )),
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(
+                        widget.isYours ? "You" : widget.pm.name,
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                     Text(
                       "at ${widget.pm.time}",
                       style: TextStyle(color: Colors.grey[700], fontSize: 12),
@@ -78,29 +81,42 @@ class _ReusableCardState extends State<ReusableCard> {
                     SizedBox(
                       height: 10,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Material(
-                        elevation: 20,
-                        borderRadius: BorderRadius.circular(10),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            "Assets/street_dog.jpeg",
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
+                    Image.network(
+                      widget.pm.url,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Material(
+                              elevation: loaded ? 20 : 0,
+                              borderRadius: BorderRadius.circular(10),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: child,
+                              ),
+                            ),
+                          );
+                        } else {
+                          return Center(
+                            child: LottieBuilder.asset(
+                                "Animations/paw_loading.json",
+                                width: MediaQuery.of(context).size.width * 0.5,
+                            ),
+                          );
+                        }
+                      },
                     ),
                     SizedBox(
                       height: 20,
                     ),
-                    ReusableIconText(text: widget.pm.des, icon: Icons.description),
+                    ReusableIconText(
+                        text: widget.pm.des, icon: Icons.description),
                     SizedBox(
                       height: 10,
                     ),
                     ReusableIconText(
-                        text: widget.pm.manual_address, icon: Icons.location_city),
+                        text: widget.pm.manual_address,
+                        icon: Icons.location_city),
                     SizedBox(
                       height: 10,
                     ),

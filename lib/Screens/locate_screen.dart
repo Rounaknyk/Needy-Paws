@@ -1,5 +1,9 @@
+
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+import 'package:lottie/lottie.dart' as animation;
 import 'package:needy_paw/Models/Ltlg.dart';
 
  class LocateScreen extends StatefulWidget {
@@ -13,25 +17,58 @@ import 'package:needy_paw/Models/Ltlg.dart';
 
 class _LocateScreenState extends State<LocateScreen> {
 
-   List<Marker> marker = [];
+   List<Marker> destination = [];
    bool isNormal = true;
+   LocationData? currentLocation;
+   List<LatLng> polyCoords = [];
 
-  setMarkers() {
-    setState(() {
-      marker.add(
-        Marker(
-          markerId: MarkerId("${DateTime.now().millisecondsSinceEpoch}"),
-          position: LatLng(widget.ltlg.lat, widget.ltlg.lng),
-        ),
-      );
-    });
-  }
+   setMarkers() {
+      setState(() {
+        destination.add(
+          Marker(
+            markerId: MarkerId("destintaion"),
+            position: LatLng(widget.ltlg.lat, widget.ltlg.lng),
+          ),
+        );
+      });
+    }
+
+    void getPolylinePoints() async {
+
+     PolylinePoints points = PolylinePoints();
+     PolylineResult res = await points.getRouteBetweenCoordinates(
+         "AIzaSyDwniEM6ZWWq5cz3dr7MRWzogib9fNnQ6g", PointLatLng(currentLocation!.latitude!, currentLocation!.longitude!), PointLatLng(widget.ltlg.lat, widget.ltlg.lng));
+
+     if(res.points.isNotEmpty){
+       res.points.forEach((PointLatLng point) {
+        polyCoords.add(LatLng(point.latitude, point.longitude));
+       });
+       setState(() {
+
+       });
+     }
+
+   }
+
+    Future getCurrentLocation() async {
+     Location location = Location();
+
+     await location.getLocation().then((location){
+       currentLocation = location;
+     });
+     setState(() {
+     });
+    }
 
   @override
   void initState() {
+
     // TODO: implement initState
     super.initState();
     setMarkers();
+    getCurrentLocation();
+
+    getPolylinePoints();
   }
 
    @override
@@ -49,13 +86,36 @@ class _LocateScreenState extends State<LocateScreen> {
        ),
        body: Stack(
          children: [
+           (currentLocation == null) ? Center(
+             child: animation.LottieBuilder.asset(
+               "Animations/paw_loading.json",
+               height: MediaQuery.of(context).size.height * 0.5,
+               width: MediaQuery.of(context).size.width * 0.5,
+             ),
+           ) :
            GoogleMap(
              myLocationButtonEnabled: false,
              initialCameraPosition: CameraPosition(
-                 target: LatLng(widget.ltlg.lat, widget.ltlg.lng),
+                 target: LatLng(
+                     widget.ltlg.lat, widget.ltlg.lng
+                 ),
                  zoom: 10),
-             markers: Set.from(marker),
-             mapType: isNormal ? MapType.normal : MapType.hybrid,
+             markers: {
+               destination[0],
+               Marker(
+                 markerId: MarkerId("source"),
+                 position: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+               ),
+             },
+             polylines: {
+               Polyline(
+                 polylineId: PolylineId("route"),
+                 points: polyCoords,
+                 color: Colors.blue,
+                 width: 6
+               ),
+             },
+             mapType: isNormal ? MapType.normal : MapType.satellite,
            ),
            Positioned(
              bottom: 30,
@@ -121,7 +181,7 @@ class _LocateScreenState extends State<LocateScreen> {
                              horizontal: 5, vertical: 10),
                          child: Center(
                            child: Text(
-                             "Hybrid",
+                             "Satellite",
                              style: TextStyle(
                                  color: isNormal
                                      ? Colors.black

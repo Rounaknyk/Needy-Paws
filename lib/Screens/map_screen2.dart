@@ -15,6 +15,7 @@ class _MapScreen2State extends State<MapScreen2> {
   bool isNormal = true;
   List<Marker> markers = [];
   setMarkers() {
+    if(widget.cList.length != 0)
     for (ClinicModel cm in widget.cList) {
       markers.add(
         Marker(
@@ -50,13 +51,14 @@ class _MapScreen2State extends State<MapScreen2> {
       ),
       body: Stack(
         children: [
+          (widget.cList.length == 0) ? Center(child: Text("No clinic added for now")) :
           GoogleMap(
             myLocationButtonEnabled: false,
             initialCameraPosition: CameraPosition(
                 target: LatLng(widget.cList[0].ltlg.lat, widget.cList[0].ltlg.lng),
-                zoom: 10),
+                zoom: 15,),
             markers: Set.from(markers),
-            mapType: isNormal ? MapType.normal : MapType.hybrid,
+            mapType: isNormal ? MapType.normal : MapType.satellite,
           ),
       Positioned(
         bottom: 30,
@@ -122,7 +124,7 @@ class _MapScreen2State extends State<MapScreen2> {
                         horizontal: 5, vertical: 10),
                     child: Center(
                       child: Text(
-                        "Hybrid",
+                        "Satellite",
                         style: TextStyle(
                             color: isNormal
                                 ? Colors.black

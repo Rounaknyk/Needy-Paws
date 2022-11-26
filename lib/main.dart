@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:needy_paw/Screens/add_animal_screen.dart';
 import 'package:needy_paw/Screens/add_clinic_screen.dart';
 import 'package:needy_paw/Screens/main_screen.dart';
@@ -22,6 +23,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       theme: ThemeData().copyWith(
         scaffoldBackgroundColor: kBackgroundColor

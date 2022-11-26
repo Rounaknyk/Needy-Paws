@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if(widget.myData.role == "vet")
           Navigator.pushNamed(context, MyRoutes.add_clinic);
           else
-          Navigator.pushNamed(context, MyRoutes.add_clinic);
+          Navigator.pushNamed(context, MyRoutes.add_animal);
         },
         child: Icon(Icons.pets),
       ) : null,

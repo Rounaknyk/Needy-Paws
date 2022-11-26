@@ -18,7 +18,7 @@ class _CommunityChatBubble extends State<CommunityChatBubble> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    role = (widget.role == "user") ? "" : "(${widget.role.toUpperCase()})";
+    role = (widget.role == "user") ? "" : "~${widget.role.toUpperCase()}";
 
     isMe = (widget.myUid == widget.senderUid) ? true : false;
 

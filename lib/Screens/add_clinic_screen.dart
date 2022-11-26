@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 
 import '../Models/Ltlg.dart';
 import '../MyWidgets/reusable_textfield.dart';
@@ -41,6 +42,13 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
   UploadTask? uploadTask;
   ImagePicker picker = ImagePicker();
   FirebaseAuth auth = FirebaseAuth.instance;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   Future uploadData() async {
     if (auth.currentUser != null) {
@@ -54,18 +62,30 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
         "url": url,
         "phoneNumber": phoneNumber
       });
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   Future uploadPost() async {
-    final data = storage.ref("clinics").child(DateTime.now().millisecondsSinceEpoch.toString());
 
-    uploadTask = data.putFile(fi!);
+    try {
+      final data = storage.ref("clinics").child(DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString());
 
-    final snapshot = await uploadTask?.whenComplete(() => (){});
+      uploadTask = data.putFile(fi!);
 
-    url = (await snapshot?.ref.getDownloadURL())!;
-    print(url);
+      final snapshot = await uploadTask?.whenComplete(() => () {});
+
+      url = (await snapshot?.ref.getDownloadURL())!;
+      uploadData();
+    }
+    catch(e){
+      print(e);
+    }
 
   }
 
@@ -97,15 +117,18 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          isLoading = true;
           uploadPost();
-          uploadData();
           Navigator.pop(context);
         },
-        child: Icon(Icons.pets),
+        child: isLoading ? Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: LottieBuilder.asset("Animations/paw_loading.json"),
+        ) : Icon(Icons.pets),
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

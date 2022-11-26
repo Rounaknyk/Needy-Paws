@@ -90,197 +90,198 @@ class _AdoptScreenState extends State<AdoptScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+      appBar: AppBar(title: Text("${widget.pm.name}"),),
       backgroundColor: kBackgroundColor,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            leading: GestureDetector(
-              onTap: (){
-                Navigator.pop(context);
-              },
-              child: Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.black,
+      body: Padding(
+        padding: EdgeInsets.only(top: 10),
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              leading: GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                },
               ),
-            ),
-            expandedHeight: 300,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Image.network(
-                "https://firebasestorage.googleapis.com/v0/b/needy-paws.appspot.com/o/Clinics%2FWhatsApp%20Image%202022-11-12%20at%2010.53.38%20PM.jpeg?alt=media&token=a19921c3-686a-44b3-97d9-c651c2284670",
+              expandedHeight: 300,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Image.network(
+                    widget.pm.url
+                ),
               ),
+              backgroundColor: kBackgroundColor,
             ),
-            backgroundColor: kBackgroundColor,
-          ),
-          SliverToBoxAdapter(
-            child: Material(
-              elevation: 10,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                    color: Colors.white),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+            SliverToBoxAdapter(
+              child: Material(
+                elevation: 10,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                      color: Colors.white),
                   child: Padding(
-                    padding: EdgeInsets.only(bottom: 50),
-                    child: Column(
-                      children: [
-                        ReusableIconText(
-                            text: widget.pm.des, icon: Icons.description),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        ReusableIconText(
-                            text: widget.pm.manual_address,
-                            icon: Icons.location_on),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        ReusableIconText(
-                          text: widget.pm.infection,
-                          icon: Icons.coronavirus,
-                          color: isInfected ? Colors.red : Colors.black,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ReusableButton(
-                              text: "Chat",
-                              func: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          ChatScreen(senderUid: widget.pm.uid, senderName: widget.pm.name,)),
-                                );
-                              },
-                            ),
-                            ReusableButton(
-                              text: "Locate",
-                              func: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => LocateScreen(ltlg: widget.pm.ltlg)));
-                              },
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            height: 400,
-                            width: double.infinity,
-                            child: GoogleMap(
-                              onMapCreated: (controller) {
-                                setPolylines();
-                              },
-                              polylines: Set.from(polylines),
-                              mapType:
-                                  isNormal ? MapType.normal : MapType.hybrid,
-                              myLocationButtonEnabled: false,
-                              initialCameraPosition: CameraPosition(
-                                  target: LatLng(
-                                      widget.pm.ltlg.lat, widget.pm.ltlg.lng),
-                                  zoom: 15),
-                              markers: Set.from(marker),
-                              circles: Set.from(circles),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 50),
+                      child: Column(
+                        children: [
+                          ReusableIconText(
+                              text: widget.pm.des, icon: Icons.description),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          ReusableIconText(
+                              text: widget.pm.manual_address,
+                              icon: Icons.location_on),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          ReusableIconText(
+                            text: widget.pm.infection,
+                            icon: Icons.coronavirus,
+                            color: isInfected ? Colors.red : Colors.black,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ReusableButton(
+                                text: "Chat",
+                                func: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChatScreen(senderUid: widget.pm.uid, senderName: widget.pm.name,)),
+                                  );
+                                },
+                              ),
+                              ReusableButton(
+                                text: "Locate",
+                                func: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => LocateScreen(ltlg: widget.pm.ltlg)));
+                                },
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              height: 400,
+                              width: double.infinity,
+                              child: GoogleMap(
+                                onMapCreated: (controller) {
+                                  setPolylines();
+                                },
+                                polylines: Set.from(polylines),
+                                mapType:
+                                    isNormal ? MapType.normal : MapType.satellite,
+                                myLocationButtonEnabled: false,
+                                initialCameraPosition: CameraPosition(
+                                    target: LatLng(
+                                        widget.pm.ltlg.lat, widget.pm.ltlg.lng),
+                                    zoom: 15, tilt: 0),
+                                markers: Set.from(marker),
+                                circles: Set.from(circles),
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isNormal = true;
-                                });
-                              },
-                              child: Material(
-                                elevation: 10,
-                                borderRadius: BorderRadius.circular(100),
-                                child: Container(
-                                  width: 100,
-                                  height: 35,
-                                  decoration: BoxDecoration(
-                                    color:
-                                        isNormal ? Colors.blue : Colors.white,
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 10),
-                                    child: Center(
-                                      child: Text(
-                                        "Normal",
-                                        style: TextStyle(
-                                            color: isNormal
-                                                ? Colors.white
-                                                : Colors.black),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    isNormal = true;
+                                  });
+                                },
+                                child: Material(
+                                  elevation: 10,
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: Container(
+                                    width: 100,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          isNormal ? Colors.blue : Colors.white,
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5, vertical: 10),
+                                      child: Center(
+                                        child: Text(
+                                          "Normal",
+                                          style: TextStyle(
+                                              color: isNormal
+                                                  ? Colors.white
+                                                  : Colors.black),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isNormal = false;
-                                });
-                              },
-                              child: Material(
-                                elevation: 10,
-                                borderRadius: BorderRadius.circular(100),
-                                child: Container(
-                                  width: 100,
-                                  height: 35,
-                                  decoration: BoxDecoration(
-                                    color:
-                                        isNormal ? Colors.white : Colors.blue,
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 10),
-                                    child: Center(
-                                      child: Text(
-                                        "Hybrid",
-                                        style: TextStyle(
-                                            color: isNormal
-                                                ? Colors.black
-                                                : Colors.white),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    isNormal = false;
+                                  });
+                                },
+                                child: Material(
+                                  elevation: 10,
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: Container(
+                                    width: 100,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          isNormal ? Colors.white : Colors.blue,
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5, vertical: 10),
+                                      child: Center(
+                                        child: Text(
+                                          "Satellite",
+                                          style: TextStyle(
+                                              color: isNormal
+                                                  ? Colors.black
+                                                  : Colors.white),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
 

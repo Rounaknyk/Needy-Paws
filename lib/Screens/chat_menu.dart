@@ -105,7 +105,7 @@ class _ChatMenuState extends State<ChatMenu> {
           }
 
         },
-      ) : Center(child: LottieBuilder.asset("Animations/loading_paw.json", repeat: true, reverse: true,)),
+      ) : Center(child: LottieBuilder.asset("Animations/paw_loading.json", repeat: true, reverse: true, width: MediaQuery.of(context).size.width * 0.7, height: MediaQuery.of(context).size.height * 0.7,)),
     );
   }
 }

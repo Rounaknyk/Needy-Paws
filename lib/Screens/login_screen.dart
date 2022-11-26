@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late UserModel myData;
 
   signIn(email, pass) async {
+    final scaffold = ScaffoldMessenger.of(context);
 
     try{
       await auth.signInWithEmailAndPassword(email: email, password: pass);
@@ -46,7 +47,13 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushNamed(context, MyRoutes.main);
     }
     catch(e){
-      print(e);
+      scaffold.showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          '$e',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),);
     }
 
   }

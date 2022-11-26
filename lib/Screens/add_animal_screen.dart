@@ -5,6 +5,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart';
+import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Classes/get_time.dart';
 import 'package:needy_paw/Models/Ltlg.dart';
 import 'package:needy_paw/Models/post_model.dart';
@@ -19,7 +21,6 @@ import '../Classes/get_post_time.dart';
 class AddAnimalScreen extends StatefulWidget {
   @override
   State<AddAnimalScreen> createState() => _AddAnimalScreenState();
-  
 }
 
 class _AddAnimalScreenState extends State<AddAnimalScreen> {
@@ -40,28 +41,30 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   ImagePicker picker = ImagePicker();
   File? fi;
   FirebaseAuth auth = FirebaseAuth.instance;
+  bool isLoading = false;
 
   uploadPost() async {
     try {
-      final data = storage.ref().child("posts").child(DateTime
-          .now()
-          .millisecondsSinceEpoch
-          .toString());
+      final data = storage
+          .ref()
+          .child("posts")
+          .child(DateTime.now().millisecondsSinceEpoch.toString());
       uploadTask = data.putFile(fi!);
       final snapshot = await uploadTask?.whenComplete(() => () {});
       url = (await snapshot?.ref.getDownloadURL())!;
       print(url);
-    }
-    catch(e){
-      print("Excpppppppp $url");
+      uploadData();
+    } catch (e) {
+      print(url);
     }
   }
-  
+
   getNameUid() async {
-    if(auth.currentUser != null){
-      final data = await firestore.collection("Users").doc(auth.currentUser!.uid).get();
-        name = data["name"];
-        uid = data["uid"];
+    if (auth.currentUser != null) {
+      final data =
+          await firestore.collection("Users").doc(auth.currentUser!.uid).get();
+      name = data["name"];
+      uid = data["uid"];
     }
   }
 
@@ -95,6 +98,10 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
         "name": pm.name,
         "uid": pm.uid
       });
+
+      setState(() {
+        isLoading = false;
+      });
       Navigator.pushNamed(context, MyRoutes.main);
       // selectImg();
       // uploadPost();
@@ -126,12 +133,20 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Upload Post"),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          isLoading = true;
           uploadPost();
-          uploadData();
         },
-        child: Icon(Icons.pets),
+        child: isLoading
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: LottieBuilder.asset("Animations/paw_loading.json"),
+              )
+            : Icon(Icons.pets),
       ),
       body: SafeArea(
         child: Padding(
@@ -140,17 +155,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
-                child: Text(
-                  "Upload Image",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 3,
+                flex: 8,
                 child: Container(
                   height: 100,
                   width: 100,
@@ -174,101 +179,93 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
               SizedBox(
                 height: 10,
               ),
-              Expanded(
-                flex: 9,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Description"),
-                    SizedBox(
-                      height: 20,
+              Text("Description"),
+              SizedBox(
+                height: 20,
+              ),
+              ReusabletTextField(
+                getValue: (value) {
+                  setState(() {
+                    des = value;
+                  });
+                },
+                hintText: "Enter the description",
+                icon: Icons.description,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text("Location"),
+              SizedBox(
+                height: 20,
+              ),
+              ReusabletTextField(
+                getValue: (value) {
+                  manual_address = value;
+                },
+                hintText: "Manual Address (optional)",
+                icon: Icons.location_on,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              GestureDetector(
+                onTap: () async {
+                  ltlg = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MapScreen(),
                     ),
-                    ReusabletTextField(
-                      getValue: (value) {
-                        setState(() {
-                          des = value;
-                        });
-                      },
-                      hintText: "Enter the description",
-                      icon: Icons.description,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text("Location"),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    ReusabletTextField(
-                      getValue: (value) {
-                        manual_address = value;
-                      },
-                      hintText: "Manual Address (optional)",
-                      icon: Icons.location_on,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        ltlg = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MapScreen(),
+                  );
+                  setState(() {});
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blueAccent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            color: Colors.white,
                           ),
-                        );
-                        setState(() {});
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.blueAccent,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Icon(
-                                  Icons.location_on,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    "Tap to set location",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ],
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              "Tap to set location",
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text("Is it infected ? (optional)"),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    ReusabletTextField(
-                      getValue: (value) {
-                        setState(() {
-                          infection = value;
-                        });
-                      },
-                      hintText: "Leave this blank if none",
-                      icon: Icons.coronavirus,
-                    ),
-                  ],
+                  ),
                 ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text("Is it infected ? (optional)"),
+              SizedBox(
+                height: 20,
+              ),
+              ReusabletTextField(
+                getValue: (value) {
+                  setState(() {
+                    infection = value;
+                  });
+                },
+                hintText: "Leave this blank if none",
+                icon: Icons.coronavirus,
               ),
             ],
           ),

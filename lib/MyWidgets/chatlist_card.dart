@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/clinic_model.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
 import 'package:needy_paw/Screens/chat_screen.dart';
@@ -33,9 +34,12 @@ class ChatListCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CircleAvatar(
+                    backgroundColor: Colors.white,
                     radius: 25,
                     child: ClipRRect(
-                      child: Image.asset("Assets/street_dog.jpeg"),
+                      child: (role == "user") ? LottieBuilder.asset("Animations/profile.json")
+                          : ( (role == "adopter") ? LottieBuilder.asset("Animations/adopter.json")
+                          : (role == "vet") ? LottieBuilder.asset("Animations/vet.json") : null ),
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),

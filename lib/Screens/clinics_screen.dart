@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:needy_paw/Models/clinic_model.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
@@ -59,8 +60,11 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       appBar: AppBar(
+
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: (){

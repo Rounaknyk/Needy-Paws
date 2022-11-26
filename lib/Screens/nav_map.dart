@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:needy_paw/Models/post_model.dart';
 import '../Models/Ltlg.dart';
@@ -8,6 +7,10 @@ import '../Models/Ltlg.dart';
 class NavScreen extends StatefulWidget {
   @override
   State<NavScreen> createState() => _NavScreenState();
+
+  NavScreen({required this.pList});
+  List<PostModel> pList;
+
 }
 
 class _NavScreenState extends State<NavScreen> {
@@ -16,32 +19,20 @@ class _NavScreenState extends State<NavScreen> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   bool isInfected = false;
   List<Circle> circles = [];
+  bool isNormal = true;
 
-  loadMarkers() async {
-    final markers = await firestore.collection("Posts").get();
-    for (var mark in markers.docs) {
-      PostModel pm = PostModel(
-          url: mark["url"],
-          des: mark["des"],
-          ltlg: Ltlg(mark["lat"], mark["lng"]),
-          time: mark["time"],
-          manual_address: mark["manual_address"],
-          infection: mark["infection"],
-          name: mark["name"],
-          uid: mark["uid"]);
+  loadMarkers(){
+    for (PostModel pm in widget.pList) {
+
       isInfected = (pm.infection == "none") ? false : true;
-
 
       marker.add(
         Marker(
           infoWindow: InfoWindow(
-              snippet: "getAddress(pm.ltlg)", title: "Infection: ${pm.infection}",),
-          icon: isInfected
-              ? BitmapDescriptor.defaultMarker
-              : BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueGreen),
+              snippet: "${pm.manual_address}", title: "Infection: ${pm.infection}",),
           markerId: MarkerId(DateTime.now().millisecondsSinceEpoch.toString()),
           position: LatLng(pm.ltlg.lat, pm.ltlg.lng),
+          icon: isInfected ? BitmapDescriptor.defaultMarker : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen.toDouble()),
         ),
       );
 
@@ -64,18 +55,102 @@ class _NavScreenState extends State<NavScreen> {
     // TODO: implement initState
     super.initState();
     loadMarkers();
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GoogleMap(
-        circles: Set.from(circles),
-        mapType: MapType.normal,
-        initialCameraPosition:
-            CameraPosition(target: LatLng(15.2993, 74.1240), zoom: 14),
-        markers: Set.from(marker),
-        onTap: null,
+      body: Stack(
+        children: [
+          GoogleMap(
+            indoorViewEnabled: true,
+            circles: Set.from(circles),
+            mapType: isNormal ? MapType.normal : MapType.satellite,
+            initialCameraPosition:
+                CameraPosition(target: LatLng(widget.pList[0].ltlg.lat, widget.pList[0].ltlg.lng), zoom: 10, tilt: 50),
+            markers: Set.from(marker),
+            onTap: null,
+          ),
+          Positioned(
+            bottom: 30,
+            left: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isNormal = true;
+                    });
+                  },
+                  child: Material(
+                    elevation: 10,
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      width: 100,
+                      height: 35,
+                      decoration: BoxDecoration(
+                        color:
+                        isNormal ? Colors.blue : Colors.white,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 10),
+                        child: Center(
+                          child: Text(
+                            "Normal",
+                            style: TextStyle(
+                                color: isNormal
+                                    ? Colors.white
+                                    : Colors.black),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isNormal = false;
+                    });
+                  },
+                  child: Material(
+                    elevation: 10,
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      width: 100,
+                      height: 35,
+                      decoration: BoxDecoration(
+                        color:
+                        isNormal ? Colors.white : Colors.blue,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 10),
+                        child: Center(
+                          child: Text(
+                            "Satellite",
+                            style: TextStyle(
+                                color: isNormal
+                                    ? Colors.black
+                                    : Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
