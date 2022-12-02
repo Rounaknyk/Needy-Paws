@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:needy_paw/Models/post_model.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
@@ -8,6 +9,7 @@ import 'package:needy_paw/Screens/chat_screen.dart';
 import 'package:needy_paw/Screens/locate_screen.dart';
 import 'package:needy_paw/constants.dart';
 import 'package:needy_paw/my_routes.dart';
+import 'package:share/share.dart';
 
 enum mapType { normal, hybrid }
 
@@ -88,11 +90,20 @@ class _AdoptScreenState extends State<AdoptScreen> {
     );
   }
 
+  Future<void> shareFile() async {
+    String locationUrl = "google.com/maps/search/${widget.pm.ltlg.lat},+${widget.pm.ltlg.lng}/";
+    Share.share("*This stray animal needs your help 👇*\n${widget.pm.url}\n\nlocation :\n${locationUrl}");
+  }
+
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(title: Text("${widget.pm.name}"),),
+      appBar: AppBar(title: Text("${widget.pm.name}"), actions: [
+        IconButton(onPressed: (){
+          shareFile();
+        }, icon: Icon(Icons.share))
+      ],),
       backgroundColor: kBackgroundColor,
       body: Padding(
         padding: EdgeInsets.only(top: 10),
@@ -131,20 +142,19 @@ class _AdoptScreenState extends State<AdoptScreen> {
                       child: Column(
                         children: [
                           ReusableIconText(
-                              text: widget.pm.des, icon: Icons.description),
+                              text: widget.pm.des, icon: SvgPicture.asset("svgs/des.svg", height: 24, width: 24),),
                           SizedBox(
                             height: 10,
                           ),
                           ReusableIconText(
                               text: widget.pm.manual_address,
-                              icon: Icons.location_on),
+                              icon: SvgPicture.asset("svgs/location.svg", height: 24, width: 24,)),
                           SizedBox(
                             height: 10,
                           ),
                           ReusableIconText(
                             text: widget.pm.infection,
-                            icon: Icons.coronavirus,
-                            color: isInfected ? Colors.red : Colors.black,
+                            icon: SvgPicture.asset("svgs/coronavirus.svg", height: 24, width: 24, color: isInfected ? Colors.red : Colors.black),
                           ),
                           SizedBox(
                             height: 10,
@@ -190,7 +200,7 @@ class _AdoptScreenState extends State<AdoptScreen> {
                                 initialCameraPosition: CameraPosition(
                                     target: LatLng(
                                         widget.pm.ltlg.lat, widget.pm.ltlg.lng),
-                                    zoom: 15, tilt: 0),
+                                    zoom: 15, tilt: 50),
                                 markers: Set.from(marker),
                                 circles: Set.from(circles),
                               ),

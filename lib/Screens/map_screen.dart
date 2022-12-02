@@ -39,6 +39,7 @@ class _MapScreenState extends State<MapScreen> {
     Location loc = Location();
     await loc.getLocation().then((value) {
       locationData = value;
+      ltlg = Ltlg(locationData!.latitude!, locationData!.longitude!);
       marker.add(
         Marker(
           markerId: MarkerId("MarkerId"),
@@ -70,16 +71,16 @@ class _MapScreenState extends State<MapScreen> {
           : Stack(
             children: [
               GoogleMap(
-        mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
                       target:
                           LatLng(locationData!.latitude!, locationData!.longitude!),
-                      zoom: 15),
+                      zoom: 15, tilt: 50),
                   markers: Set.from(marker),
                   onTap: _onTapHandle,
+                mapType: isNormal ? MapType.normal : MapType.satellite,
                 ),
               Positioned(
-                bottom: 30,
+                bottom: 50,
                 left: 100,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

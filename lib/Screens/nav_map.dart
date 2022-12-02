@@ -1,6 +1,10 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:lottie/lottie.dart' as anim;
 import 'package:needy_paw/Models/post_model.dart';
 import '../Models/Ltlg.dart';
 
@@ -32,7 +36,7 @@ class _NavScreenState extends State<NavScreen> {
               snippet: "${pm.manual_address}", title: "Infection: ${pm.infection}",),
           markerId: MarkerId(DateTime.now().millisecondsSinceEpoch.toString()),
           position: LatLng(pm.ltlg.lat, pm.ltlg.lng),
-          icon: isInfected ? BitmapDescriptor.defaultMarker : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen.toDouble()),
+          icon: isInfected ? BitmapDescriptor.defaultMarker : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
         ),
       );
 
@@ -54,6 +58,7 @@ class _NavScreenState extends State<NavScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    if(widget.pList.length > 0)
     loadMarkers();
 
   }
@@ -61,7 +66,7 @@ class _NavScreenState extends State<NavScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      body: (widget.pList.length == 0) ? Center(child: anim.LottieBuilder.asset("Animations/empty.json"),) : Stack(
         children: [
           GoogleMap(
             indoorViewEnabled: true,
@@ -73,7 +78,7 @@ class _NavScreenState extends State<NavScreen> {
             onTap: null,
           ),
           Positioned(
-            bottom: 30,
+            bottom: 50,
             left: 100,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

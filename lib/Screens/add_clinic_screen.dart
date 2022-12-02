@@ -27,16 +27,15 @@ class AddClinicScreen extends StatefulWidget {
 }
 
 class _AddClinicScreenState extends State<AddClinicScreen> {
-  String des = "";
-  String infection = "none";
   String manual_address = "none";
   String phoneNumber = "none";
-  late String vname, cname, uid;
+  late String uid;
+  String vname = "", cname = "";
   File? fi;
   String url =
       "https://firebasestorage.googleapis.com/v0/b/needy-paws.appspot.com/o/Clinics%2Fclinic.png?alt=media&token=bd396ada-54e4-4e01-9bdc-d746e916f0e2";
   Widget textOrImage = Text("Tap here to upload");
-  late Ltlg ltlg;
+  Ltlg ltlg = Ltlg(0.0, 0.0);
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseStorage storage = FirebaseStorage.instance;
   UploadTask? uploadTask;
@@ -65,10 +64,13 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
       setState(() {
         isLoading = false;
       });
+      Navigator.pop(context);
+
     }
   }
 
   Future uploadPost() async {
+    isLoading = true;
 
     try {
       final data = storage.ref("clinics").child(DateTime
@@ -108,6 +110,68 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
     // FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.media);
     // print(result);
   }
+
+  bool isValid(){
+    print("$vname $cname $fi $ltlg $phoneNumber $manual_address");
+
+    if(vname == "" || vname == null){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          "Please enter the vet\'s name",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),);
+      return false;
+    }
+
+    if(phoneNumber == null || phoneNumber == "none"){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'Please enter a phonenumber',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),);
+      return false;
+    }
+
+    if(cname == null || cname == ""){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'Please enter the clinic name',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),);
+      return false;
+    }
+
+    if(manual_address == "none" || manual_address == null){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'Manual Address cannot be empty',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),);
+      return false;
+    }
+
+    if(ltlg.lng == 0.0){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'Please select a location',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),);
+      return false;
+    }
+
+    return true;
+
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -117,9 +181,9 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          isLoading = true;
+          if(isValid())
           uploadPost();
-          Navigator.pop(context);
+
         },
         child: isLoading ? Padding(
           padding: const EdgeInsets.all(8.0),

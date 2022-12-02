@@ -43,16 +43,6 @@ class _ChatMenuState extends State<ChatMenu> {
       loaded = true;
     });
 
-   //  print(myData.uid);
-   //  final data = await firestore.collection("Users").doc(myData.uid).collection("Chats").get();
-   //
-   // print(data.docs[0].reference.id);
-   //  var collection = FirebaseFirestore.instance.collection('Users').doc(myData.uid).collection("Chats");
-   //  var querySnapshots = await collection.get();
-   //  for (var snapshot in querySnapshots.docs) {
-   //    var documentID = snapshot.id; // <-- Document ID
-   //    print(documentID);
-   //  }
   }
 
   getMyData() async {
@@ -91,17 +81,21 @@ class _ChatMenuState extends State<ChatMenu> {
                 cards.add(ChatListCard(name: user["name"], email: user["email"], uid: user["uid"], role: user["role"]));
 
               }
-              // cm = ChatModel(msg["text"], msg["time"], msg["isMe"], msg["senderUid"], msg["myUid"]);
-              // print("$senderUid \n ${msg["senderUid"]}");
             }
 
-            return ListView(
-              children: cards,
-            );
+            if(cards.isEmpty){
+              return Center(
+                child: LottieBuilder.asset("Animations/empty.json",),);
+            }
+            else{
+              return ListView(
+                children: cards,
+              );
 
+            }
           }
           else{
-            return Text("No data");
+            return Text("");
           }
 
         },

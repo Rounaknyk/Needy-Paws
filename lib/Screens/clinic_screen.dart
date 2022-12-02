@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:needy_paw/Models/clinic_model.dart';
+import 'package:needy_paw/Screens/locate_screen.dart';
 import 'package:needy_paw/Screens/map_screen2.dart';
 import 'package:needy_paw/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,6 +31,7 @@ class _ClinicScreenState extends State<ClinicScreen> {
     cList.add(widget.cm);
     mark.add(
       Marker(
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
           markerId: MarkerId("12345678"),
           position: LatLng(widget.cm.ltlg.lat, widget.cm.ltlg.lng),
           onTap: () {
@@ -59,9 +62,12 @@ class _ClinicScreenState extends State<ClinicScreen> {
             },
           ),
           actions: [
-            IconButton(icon: Icon(Icons.location_on, color: Colors.black,), onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen2(cList: cList)));
-            }),
+            Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: GestureDetector(child: SvgPicture.asset("svgs/location.svg", height: 24, width: 24,), onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen2(cList: cList),),);
+              }, ),
+            ),
           ],
         ),
         body: SafeArea(
@@ -139,6 +145,8 @@ class _ClinicScreenState extends State<ClinicScreen> {
                                   onTap: () async {
                                     Clipboard.setData(ClipboardData(
                                         text: widget.cm.phoneNumber));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(content: Text("Number Copied !"),),);
                                   },
                                 ),
                               ],

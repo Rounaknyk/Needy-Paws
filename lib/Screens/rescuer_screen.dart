@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/Ltlg.dart';
 import 'package:needy_paw/Models/rescuer_model.dart';
 import 'package:needy_paw/MyWidgets/clinic_card.dart';
@@ -7,7 +8,6 @@ import 'package:needy_paw/MyWidgets/clinic_card.dart';
 import '../MyWidgets/rescuer_card.dart';
 
 class RescuerScreen extends StatefulWidget {
-
   @override
   State<RescuerScreen> createState() => _RescuerScreenState();
 }
@@ -19,12 +19,14 @@ class _RescuerScreenState extends State<RescuerScreen> {
   Future getData() async {
     final data = await firestore.collection("Rescuers").get();
 
-    for(var d in data.docs){
+    for (var d in data.docs) {
       setState(() {
-        rl.add(RescuerModel(name: d["name"], phoneNumber: d["phoneNumber"], manual_address: d["manual_address"]));
+        rl.add(RescuerModel(
+            name: d["name"],
+            phoneNumber: d["phoneNumber"],
+            manual_address: d["manual_address"]));
       });
     }
-
   }
 
   @override
@@ -40,7 +42,7 @@ class _RescuerScreenState extends State<RescuerScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
-          onPressed: (){
+          onPressed: () {
             Navigator.pop(context);
           },
           icon: Icon(
@@ -48,12 +50,25 @@ class _RescuerScreenState extends State<RescuerScreen> {
             color: Colors.black,
           ),
         ),
-        title: Text("Rescuers", style: TextStyle(color: Colors.black),),
+        title: Text(
+          "Rescuers",
+          style: TextStyle(color: Colors.black),
+        ),
       ),
-      body: ListView.builder(itemBuilder: (context, index) {
-
-        return RescuerCard(rm: rl[index],);
-      }, itemCount: rl.length,),
+      body: (rl.isNotEmpty)
+          ? ListView.builder(
+              itemBuilder: (context, index) {
+                return RescuerCard(
+                  rm: rl[index],
+                );
+              },
+              itemCount: rl.length,
+            )
+          : Center(
+              child: LottieBuilder.asset(
+                "Animations/empty.json",
+              ),
+            ),
     );
   }
 }

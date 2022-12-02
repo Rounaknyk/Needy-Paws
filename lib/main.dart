@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData().copyWith(
         scaffoldBackgroundColor: kBackgroundColor
       ),
+      debugShowCheckedModeBanner: false,
       initialRoute: MyRoutes.splash,
       routes: {
         MyRoutes.splash: (context) => SplashScreen(),

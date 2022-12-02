@@ -19,6 +19,7 @@ class _MapScreen2State extends State<MapScreen2> {
     for (ClinicModel cm in widget.cList) {
       markers.add(
         Marker(
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
           markerId: MarkerId("${DateTime.now().millisecondsSinceEpoch}"),
           position: LatLng(cm.ltlg.lat, cm.ltlg.lng),
           infoWindow: InfoWindow(
@@ -49,19 +50,18 @@ class _MapScreen2State extends State<MapScreen2> {
           },
         ),
       ),
-      body: Stack(
+      body: (widget.cList.length == 0) ? Center(child: Text("No clinic's added for now")) : Stack(
         children: [
-          (widget.cList.length == 0) ? Center(child: Text("No clinic added for now")) :
           GoogleMap(
             myLocationButtonEnabled: false,
             initialCameraPosition: CameraPosition(
                 target: LatLng(widget.cList[0].ltlg.lat, widget.cList[0].ltlg.lng),
-                zoom: 15,),
+                zoom: 15, tilt: 50),
             markers: Set.from(markers),
             mapType: isNormal ? MapType.normal : MapType.satellite,
           ),
       Positioned(
-        bottom: 30,
+        bottom: 50,
         left: 100,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -79,8 +79,7 @@ class _MapScreen2State extends State<MapScreen2> {
                   width: 100,
                   height: 35,
                   decoration: BoxDecoration(
-                    color:
-                    isNormal ? Colors.blue : Colors.white,
+                    color: isNormal ? Colors.blue : Colors.white,
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: Padding(

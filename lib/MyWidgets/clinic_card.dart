@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/clinic_model.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
 import 'package:needy_paw/Screens/clinic_screen.dart';
@@ -15,6 +16,7 @@ class ClinicCard extends StatelessWidget {
       required this.phoneNumber});
   late String cname, vname, manual_address, url, phoneNumber;
   late Ltlg ltlg;
+  bool loaded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,33 @@ class ClinicCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.network(url),
+                ClipRRect(
+                  child: Image.network(
+                    url,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Material(
+                      elevation: loaded ? 20 : 0,
+                      borderRadius: BorderRadius.circular(10),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: child,
+                      ),
+                    ),
+                  );
+                } else {
+                  return Center(
+                    child: LottieBuilder.asset(
+                      "Animations/paw_loading.json",
+                      width: MediaQuery.of(context).size.width * 0.1,
+                    ),
+                  );
+                }
+              },
+            ),
+                  borderRadius: BorderRadius.circular(10),),
                 Expanded(
                   flex: 4,
                   child: Padding(

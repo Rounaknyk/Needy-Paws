@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             GestureDetector(onTap: (){
-              Navigator.pushNamed(context, MyRoutes.signup);
+              Navigator.pushNamed (context, MyRoutes.signup);
             }, child: Text("NEEDY PAW'S", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, ),)),
           ],
         ),

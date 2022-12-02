@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/clinic_model.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
 import 'package:needy_paw/Screens/map_screen2.dart';
@@ -85,12 +86,13 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: ListView.builder(
+          child: (clinicList.isNotEmpty) ? ListView.builder(
             itemCount: clinicList.length,
             itemBuilder: (context, index) {
-              return clinicList[index];
+                return clinicList[index];
             },
-          ),
+          ) : Center(
+        child: LottieBuilder.asset("Animations/empty.json",),),
         ),
       ),
     );

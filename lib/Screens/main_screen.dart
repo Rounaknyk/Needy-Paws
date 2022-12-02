@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:needy_paw/Models/user_model.dart';
 import 'package:needy_paw/Screens/account_screen.dart';
 import 'package:needy_paw/Screens/chat_menu.dart';
@@ -89,23 +90,23 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined),
               label: 'Home',
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.location_on),
+              icon: Icon(Icons.location_on_outlined),
               label: 'Map',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.wechat_sharp),
+            icon: Icon(Icons.chat_bubble_outline_sharp),
             label: 'Chats',
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.groups),
+              icon: Icon(Icons.groups_outlined),
               label: "More"
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: Icon(Icons.person_outline),
               label: 'Profile',
           ),
         ],

@@ -1,12 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/Ltlg.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
 import 'package:needy_paw/MyWidgets/reusable_icon_text.dart';
 import 'package:needy_paw/Screens/adopt_screen.dart';
+import 'package:share/share.dart';
 
 import '../Models/post_model.dart';
 
@@ -23,6 +25,7 @@ class _ReusableCardState extends State<ReusableCard> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
   bool loaded = false;
+  bool isInfected = false;
 
   @override
   void initState() {
@@ -30,6 +33,8 @@ class _ReusableCardState extends State<ReusableCard> {
     super.initState();
     print(widget.pm.url);
     widget.isYours = (auth.currentUser!.uid == widget.pm.uid);
+
+    isInfected = (widget.pm.infection == "none") ? false : true;
   }
 
   deletePost() async {
@@ -44,6 +49,11 @@ class _ReusableCardState extends State<ReusableCard> {
         }
       }
     }
+  }
+
+  Future<void> shareFile() async {
+    String locationUrl = "google.com/maps/search/${widget.pm.ltlg.lat},+${widget.pm.ltlg.lng}/";
+    Share.share("*This stray animal needs your help 👇*\n${widget.pm.url}\n\nlocation :\n${locationUrl}");
   }
 
   @override
@@ -99,8 +109,8 @@ class _ReusableCardState extends State<ReusableCard> {
                         } else {
                           return Center(
                             child: LottieBuilder.asset(
-                                "Animations/paw_loading.json",
-                                width: MediaQuery.of(context).size.width * 0.5,
+                              "Animations/paw_loading.json",
+                              width: MediaQuery.of(context).size.width * 0.5,
                             ),
                           );
                         }
@@ -110,19 +120,35 @@ class _ReusableCardState extends State<ReusableCard> {
                       height: 20,
                     ),
                     ReusableIconText(
-                        text: widget.pm.des, icon: Icons.description),
+                        text: widget.pm.des,
+                        icon: SvgPicture.asset(
+                          "svgs/des.svg",
+                          height: 24,
+                          width: 24,
+                        )),
                     SizedBox(
                       height: 10,
                     ),
                     ReusableIconText(
-                        text: widget.pm.manual_address,
-                        icon: Icons.location_city),
+                      text: widget.pm.manual_address,
+                      //city location
+                      icon: SvgPicture.asset(
+                        "svgs/location.svg",
+                        height: 24,
+                        width: 24,
+                      ),
+                    ),
                     SizedBox(
                       height: 10,
                     ),
                     ReusableIconText(
                         text: widget.pm.infection,
-                        icon: Icons.coronavirus,
+                        icon: SvgPicture.asset(
+                          "svgs/coronavirus.svg",
+                          height: 24,
+                          width: 24,
+                          color: isInfected ? Colors.red : Colors.black,
+                        ),
                         color: (widget.pm.infection != "none")
                             ? Colors.red
                             : Colors.black),
@@ -152,6 +178,28 @@ class _ReusableCardState extends State<ReusableCard> {
                             builder: (context) => AdoptScreen(pm: widget.pm)));
                   }),
           bottom: 30,
+          right: 30,
+        ),
+        Positioned(
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: (){
+                  shareFile();
+              }, icon: Icon(Icons.share),),
+              SizedBox(width: 10,),
+              isInfected ? LottieBuilder.asset(
+                "Animations/virus.json",
+                height: 50,
+                width: 50,
+              ) : SvgPicture.asset(
+                "svgs/shield.svg",
+                height: 30,
+                width: 30,
+              ),
+            ],
+          ),
+          top: 30,
           right: 30,
         ),
       ],

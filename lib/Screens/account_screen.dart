@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/user_model.dart';
 import 'package:needy_paw/my_routes.dart';
 
@@ -66,14 +67,22 @@ class AccountScreen extends StatelessWidget {
                                     manual_address: post["manual_address"],
                                     name: post["name"],
                                     uid: post["uid"])));
-                          // print("$senderUid \n ${msg["senderUid"]}");
                         }
 
-                        return ListView(
-                          children: posts,
-                        );
+                        if(posts.length == 0 || posts == null){
+                          return Center(
+                            child: LottieBuilder.asset("Animations/empty.json",),
+                          );
+                        }
+                        else{
+                          return ListView(
+                            children: posts,
+                          );
+                        }
                       } else {
-                        return Text("No data");
+                        return Center(
+                          child: LottieBuilder.asset("Animations/empty.json", height: MediaQuery.of(context).size.height * 0.5, width: MediaQuery.of(context).size.width * 0.5,),
+                        );
                       }
                     },
                   ),

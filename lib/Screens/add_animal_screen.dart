@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   String url =
       "https://firebasestorage.googleapis.com/v0/b/needy-paws.appspot.com/o/posts%2Fdeveloper.jpeg?alt=media&token=b92f309f-f06e-4d33-8b25-3b7220ca4f2d";
   Widget textOrImage = Text("Tap here to upload");
-  late Ltlg ltlg;
+  Ltlg ltlg = Ltlg(0.0, 0.0);
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseStorage storage = FirebaseStorage.instance;
   UploadTask? uploadTask;
@@ -44,6 +43,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   bool isLoading = false;
 
   uploadPost() async {
+    isLoading = true;
     try {
       final data = storage
           .ref()
@@ -81,7 +81,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
         des: des,
         ltlg: ltlg,
         time: GetPostTime().getTime(context, DateTime.now()),
-        infection: infection,
+        infection: (infection == "") ? "none" : infection,
         manual_address: manual_address,
         name: name,
         uid: uid);
@@ -130,6 +130,57 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
     // print(result);
   }
 
+  bool isValid(){
+ print("$manual_address  $fi ${ltlg.lng}");
+
+     if(fi == null){
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+         backgroundColor: Colors.red,
+         content: Text(
+           'Please select an image',
+           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+         ),
+       ),);
+       return false;
+     }
+
+    if(des == "" || des == null){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'Description cannot be empty',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),);
+      return false;
+    }
+
+    if(manual_address == "none" || manual_address == null){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'Manual Address cannot be empty',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),);
+      return false;
+    }
+
+    if(ltlg.lat == 0.0){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'Please select a location',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),);
+      return false;
+    }
+
+    return true;
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,7 +189,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          isLoading = true;
+          if(isValid())
           uploadPost();
         },
         child: isLoading

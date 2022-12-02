@@ -50,25 +50,13 @@ class _LocateScreenState extends State<LocateScreen> {
 
    }
 
-    Future getCurrentLocation() async {
-     Location location = Location();
-
-     await location.getLocation().then((location){
-       currentLocation = location;
-     });
-     setState(() {
-     });
-    }
-
   @override
   void initState() {
 
     // TODO: implement initState
     super.initState();
     setMarkers();
-    getCurrentLocation();
-
-    getPolylinePoints();
+    // getPolylinePoints();
   }
 
    @override
@@ -86,34 +74,15 @@ class _LocateScreenState extends State<LocateScreen> {
        ),
        body: Stack(
          children: [
-           (currentLocation == null) ? Center(
-             child: animation.LottieBuilder.asset(
-               "Animations/paw_loading.json",
-               height: MediaQuery.of(context).size.height * 0.5,
-               width: MediaQuery.of(context).size.width * 0.5,
-             ),
-           ) :
            GoogleMap(
              myLocationButtonEnabled: false,
              initialCameraPosition: CameraPosition(
                  target: LatLng(
                      widget.ltlg.lat, widget.ltlg.lng
                  ),
-                 zoom: 10),
+                 zoom: 15),
              markers: {
                destination[0],
-               Marker(
-                 markerId: MarkerId("source"),
-                 position: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
-               ),
-             },
-             polylines: {
-               Polyline(
-                 polylineId: PolylineId("route"),
-                 points: polyCoords,
-                 color: Colors.blue,
-                 width: 6
-               ),
              },
              mapType: isNormal ? MapType.normal : MapType.satellite,
            ),
