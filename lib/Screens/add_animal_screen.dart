@@ -14,6 +14,7 @@ import 'dart:io';
 import 'package:needy_paw/MyWidgets/reusable_textfield.dart';
 import 'package:needy_paw/Screens/map_screen.dart';
 import 'package:needy_paw/my_routes.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../Classes/get_post_time.dart';
 
@@ -41,14 +42,19 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   File? fi;
   FirebaseAuth auth = FirebaseAuth.instance;
   bool isLoading = false;
+  String token = "", pId = "000000000";
 
   uploadPost() async {
-    isLoading = true;
+    setState((){
+      pId = DateTime.now().millisecondsSinceEpoch.toString();
+      isLoading = true;
+    });
+
     try {
       final data = storage
           .ref()
           .child("posts")
-          .child(DateTime.now().millisecondsSinceEpoch.toString());
+          .child(pId);
       uploadTask = data.putFile(fi!);
       final snapshot = await uploadTask?.whenComplete(() => () {});
       url = (await snapshot?.ref.getDownloadURL())!;
@@ -65,6 +71,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
           await firestore.collection("Users").doc(auth.currentUser!.uid).get();
       name = data["name"];
       uid = data["uid"];
+      token = data["token"];
     }
   }
 
@@ -84,10 +91,12 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
         infection: (infection == "") ? "none" : infection,
         manual_address: manual_address,
         name: name,
-        uid: uid);
+        uid: uid,
+        pId: pId,
+        token: token);
 
     try {
-      await firestore.collection("Posts").doc().set({
+      await firestore.collection("Posts").doc(pm.pId).set({
         "des": pm.des,
         "url": pm.url,
         "lat": pm.ltlg.lat,
@@ -96,7 +105,9 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
         "infection": pm.infection,
         "manual_address": pm.manual_address,
         "name": pm.name,
-        "uid": pm.uid
+        "uid": pm.uid,
+        "pId" : pm.pId,
+        "token" : pm.token
       });
 
       setState(() {
@@ -111,28 +122,26 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   }
 
   Future selectImage() async {
-    try {
-      final files =
-          await ImagePicker.platform.pickImage(source: ImageSource.gallery);
-      if (files == null) {
-        print("object null");
-        return;
+
+      try {
+        final files =
+        await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+        if (files == null) {
+          return;
+        }
+        fi = File(files.path);
+        setState(() {
+          textOrImage = Image.file(fi!);
+        });
+      } catch (e) {
+        print(e);
       }
-      fi = File(files.path);
-      setState(() {
-        textOrImage = Image.file(fi!);
-      });
-    } catch (e) {
-      print(e);
-    }
 
     // FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.media);
     // print(result);
   }
 
   bool isValid(){
- print("$manual_address  $fi ${ltlg.lng}");
-
      if(fi == null){
        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
          backgroundColor: Colors.red,
@@ -189,6 +198,9 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          if(isLoading){
+            return;
+          }
           if(isValid())
           uploadPost();
         },

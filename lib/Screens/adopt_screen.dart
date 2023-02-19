@@ -169,7 +169,7 @@ class _AdoptScreenState extends State<AdoptScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            ChatScreen(senderUid: widget.pm.uid, senderName: widget.pm.name,)),
+                                            ChatScreen(senderUid: widget.pm.uid, senderName: widget.pm.name, senderToken: widget.pm.token,)),
                                   );
                                 },
                               ),

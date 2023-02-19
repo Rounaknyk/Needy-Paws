@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:736112389746:android:4544f5dbf75d31ba471ceb",
         "android_client_info": {
-          "package_name": "com.example.needy_paw"
+          "package_name": "com.np.needy_paw"
         }
       },
       "oauth_client": [
@@ -34,7 +34,7 @@
               "client_id": "736112389746-uqf794um320q7ajf2k55cu3sfgh89u71.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.needyPaw"
+                "bundle_id": "com.np.needyPaw"
               }
             }
           ]

@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/Ltlg.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
 import 'package:needy_paw/MyWidgets/reusable_icon_text.dart';
 import 'package:needy_paw/Screens/adopt_screen.dart';
+import 'package:needy_paw/Screens/profile_screen.dart';
 import 'package:share/share.dart';
 
 import '../Models/post_model.dart';
@@ -42,9 +44,9 @@ class _ReusableCardState extends State<ReusableCard> {
     if (widget.pm.uid == uid) {
       final posts = await firestore.collection("Posts").get();
       for (var post in posts.docs) {
-        if (post["lat"] == widget.pm.ltlg.lat &&
-            post["lng"] == widget.pm.ltlg.lng) {
+        if (post["pId"] == widget.pm.pId) {
           await firestore.collection("Posts").doc(post.id).delete();
+          await FirebaseStorage.instance.ref("posts/${widget.pm.pId}.jpeg").delete();
           setState(() {});
         }
       }
@@ -52,8 +54,35 @@ class _ReusableCardState extends State<ReusableCard> {
   }
 
   Future<void> shareFile() async {
-    String locationUrl = "google.com/maps/search/${widget.pm.ltlg.lat},+${widget.pm.ltlg.lng}/";
-    Share.share("*This stray animal needs your help 👇*\n${widget.pm.url}\n\nlocation :\n${locationUrl}");
+    String link = createDynamicLink(pId: widget.pm.pId) as String;
+    // String locationUrl = "google.com/maps/search/${widget.pm.ltlg.lat},+${widget.pm.ltlg.lng}/";
+    // Share.share("$link\n*This stray animal needs your help 👇*\n${widget.pm.url}\n\nlocation :\n${locationUrl}");
+  }
+
+  Future<Uri> createDynamicLink({required String pId}) async {
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      // This should match firebase but without the username query param
+      uriPrefix: 'https://needypaw.page.link',
+      // This can be whatever you want for the uri, https://yourapp.com/groupinvite?username=$userName
+      link: Uri.parse('https://needypaw.page.link/posts?pId=$pId'),
+      androidParameters: AndroidParameters(
+        packageName: "com.np.needy_paw",
+        minimumVersion: 1,
+      ),
+      iosParameters: IOSParameters(
+        bundleId: "com.np.needy_paw",
+        minimumVersion: '1',
+      ),
+    );
+    final link = await parameters.link;
+    // final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
+    //   link,
+    //   DynamicLinkParametersOptions(shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
+    // );
+    // return shortenedLink.shortUrl;
+    Share.share("$link");
+
+    return link;
   }
 
   @override
@@ -78,10 +107,15 @@ class _ReusableCardState extends State<ReusableCard> {
                     ),
                     Align(
                       alignment: AlignmentDirectional.centerStart,
-                      child: Text(
-                        widget.isYours ? "You" : widget.pm.name,
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => Profilescreen(uid: widget.pm.uid,)));
+                        },
+                        child: Text(
+                          widget.isYours ? "You" : widget.pm.name,
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                     Text(
@@ -164,8 +198,8 @@ class _ReusableCardState extends State<ReusableCard> {
         Positioned(
           child: widget.isYours
               ? ReusableButton(
-                  text: "Delete",
-                  color: Color(0XFFDE4E4F),
+            text: "Delete",
+               color: Color(0XFFDE4E4F),
                   func: () {
                     deletePost();
                   })
@@ -206,171 +240,3 @@ class _ReusableCardState extends State<ReusableCard> {
     );
   }
 }
-
-/*
-Stack(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(30),
-          child: Material(
-            elevation: 3,
-            borderRadius: BorderRadius.circular(20),
-            child: Flexible(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
-                ),
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.5,
-                child: Column(
-                  children: [
-                    Expanded(
-                      flex: 7,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end, children: [
-                                Icon(
-                                  Icons.share,
-                                  size: 30,
-                                ),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                Icon(
-                                  Icons.location_on,
-                                  size: 30,
-                                ),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                Icon(
-                                  Icons.chat_bubble,
-                                  size: 30,
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.person),
-                                Expanded(
-                                  flex: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(pm.name),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(Icons.location_on),
-                                Expanded(
-                                  flex: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(pm.manual_address),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(Icons.description),
-                                Expanded(
-                                  flex: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(pm.des),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(Icons.coronavirus,
-                                    color: (pm.infection != "none")
-                                        ? Colors.red
-                                        : Colors.black),
-                                Expanded(
-                                  flex: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      pm.infection,
-                                      style: TextStyle(
-                                          color: (pm.infection != "none")
-                                              ? Colors.red
-                                              : Colors.black),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            // Align(child: Text("$des"), alignment: AlignmentDirectional.topStart,),
-                            // SizedBox(height: 10,),
-                            // Align(child: Text("Infection : ${infection}"), alignment: AlignmentDirectional.topStart,),
-                            // SizedBox(height: 10,),
-                            // Align(child: Text("Location : Downing streets"), alignment: AlignmentDirectional.topStart,),
-                            // SizedBox(height: 40,),
-                            // Align(child: Text("* Click on the location icon to locate the animal *", style: TextStyle(fontSize: 14),), alignment: AlignmentDirectional.topStart,),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Container(
-          //fix this hard coded things
-          // height: (MediaQuery.of(context).size.height * 0.5) * 0.6,
-          height: 300,
-          child: Material(
-            borderRadius: BorderRadius.circular(20),
-            child: ClipRRect(
-              child: Image.asset(
-                "Assets/street_dog.jpeg",
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 50,
-            color: Colors.white,
-          ),
-        ),
-        Positioned(
-          bottom: 50,
-          right: 50,
-          child: Align(
-              child: ReusableButton(text: "Adopt", func: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AdoptScreen(pm: pm,),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      ],
-    );
- */

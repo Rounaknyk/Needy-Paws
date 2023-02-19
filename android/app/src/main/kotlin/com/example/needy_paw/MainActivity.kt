@@ -1,4 +1,4 @@
-package com.example.needy_paw
+package com.np.needy_paw
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -70,7 +70,9 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
   }
 
   Future uploadPost() async {
-    isLoading = true;
+    setState((){
+      isLoading = true;
+    });
 
     try {
       final data = storage.ref("clinics").child(DateTime
@@ -181,6 +183,9 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          if(isLoading){
+            return;
+          }
           if(isValid())
           uploadPost();
 

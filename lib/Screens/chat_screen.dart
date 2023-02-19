@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +9,14 @@ import 'package:needy_paw/Models/post_model.dart';
 import 'package:needy_paw/Models/user_model.dart';
 import 'package:needy_paw/MyWidgets/chat_bubble.dart';
 import 'package:needy_paw/constants.dart';
+import 'package:http/http.dart' as http;
 
 class ChatScreen extends StatefulWidget {
-  ChatScreen({required this.senderUid, required this.senderName});
+  ChatScreen({required this.senderUid, required this.senderName, this.senderToken = ""});
 
   late String senderUid;
   late String senderName;
+  String senderToken;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -20,11 +24,12 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   String msg = "";
-  late String myUid;
+  late String myUid, myName;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
   TextEditingController controller = TextEditingController();
   ScrollController _scrollController = ScrollController();
+  String myToken = "";
 
   sendMsg() async{
     firestore.collection("Users").doc(myUid).collection("Chats").doc(widget.senderUid).collection("Messages").doc(DateTime.now().millisecondsSinceEpoch.toString()).set(
@@ -47,6 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
         }
     );
 
+    sendNotification(widget.senderToken, "$msg", "Message from $myName");
     controller.clear();
 
   }
@@ -54,7 +60,49 @@ class _ChatScreenState extends State<ChatScreen> {
   getMyData() async{
     if(auth.currentUser != null){
       myUid = auth.currentUser!.uid;
+      final data = await FirebaseFirestore.instance.collection("Users").doc(myUid).get();
+      setState((){
+        myToken = data["token"];
+        myName = data["name"];
+      });
     }
+  }
+
+  sendNotification(String token, body, title) async {
+
+    print(token);
+    try{
+      await http.post(
+        Uri.parse("https://fcm.googleapis.com/fcm/send"),
+        headers: <String, String>{
+          "Content-Type" : "application/json",
+          "Authorization" : "key=$messagingServerKey"
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            "priority" : "high",
+            "data" : <String, dynamic>{
+              "click_action" : "FLUTTER_NOTIFICATION_CLICK",
+              "status" : "done",
+              "body" : body,
+              "title" : title,
+              "type" : "chat",
+            },
+            "notification" : <String, dynamic>{
+              "title" : title,
+              "body" : body,
+              "android_channel_id": "dbfood",
+          },
+            "to" : token,
+          },
+        ),
+      );
+    }
+    catch(e){
+      print(e);
+    }
+
+    print("notification sent !");
   }
 
   @override

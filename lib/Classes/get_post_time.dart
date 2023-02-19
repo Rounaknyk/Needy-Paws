@@ -8,7 +8,7 @@ class GetPostTime{
     var date = DateTime.fromMillisecondsSinceEpoch(dateTime.millisecondsSinceEpoch);
     var time = TimeOfDay.fromDateTime(date);
 
-    int day = dateTime.day;
+    int day = dateTime.month;
 
     switch(day){
       case 1:

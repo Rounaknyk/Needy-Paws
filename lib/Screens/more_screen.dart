@@ -57,27 +57,3 @@ class MoreScreen extends StatelessWidget {
     );
   }
 }
-
-/*
-Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ReusableMoreCard(text: "Clinics", func: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ClinicsScreen()));
-                    }),
-                    SizedBox(width: 20,),
-                    ReusableMoreCard(text: "Community", func: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => CommunityChatScreen()));
-                    }),
-                  ],
-                ),
-                SizedBox(height: 30,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ReusableMoreCard(text: "Rescuer", func: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => RescuerScreen()));
-                    }),
-                  ],
-                ),
- */

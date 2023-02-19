@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/user_model.dart';
+import 'package:needy_paw/Screens/rescuer_screen.dart';
 import 'package:needy_paw/constants.dart';
 import 'package:needy_paw/my_routes.dart';
 
@@ -30,6 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   hasLoggedIn(BuildContext context) async {
+
     if(auth.currentUser != null){
       final uid = auth.currentUser?.uid;
       final data = await firestore.collection("Users").doc(uid).get();
@@ -58,9 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-            GestureDetector(onTap: (){
-              Navigator.pushNamed (context, MyRoutes.signup);
-            }, child: Text("NEEDY PAW'S", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, ),)),
+            Text("NEEDY PAW'S", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, ),),
           ],
         ),
       ),

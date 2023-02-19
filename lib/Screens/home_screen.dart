@@ -9,6 +9,7 @@ import 'package:needy_paw/Models/user_model.dart';
 import 'package:needy_paw/constants.dart';
 import 'package:needy_paw/my_routes.dart';
 import 'package:needy_paw/MyWidgets/reusable_card.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -65,29 +66,29 @@ class _HomeScreenState extends State<HomeScreen> {
           : null,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        // child: ListView.builder(
-        //     children: postList,
-        // ),
         child: StreamBuilder<QuerySnapshot>(
           stream: firestore.collection("Posts").snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var postData = snapshot.data?.docs;
-
+              String token = "";
               List<ReusableCard> posts = [];
               for (var post in postData!) {
                 // cm = ChatModel(msg["text"], msg["time"], msg["isMe"], msg["senderUid"], msg["myUid"]);
-                if (auth.currentUser!.uid != post["uid"])
+                if (auth.currentUser!.uid != post["uid"]) {
                   posts.add(ReusableCard(
-                      pm: PostModel(
-                          url: post["url"],
-                          des: post["des"],
-                          ltlg: Ltlg(post["lat"], post["lng"]),
-                          time: post["time"],
-                          infection: post["infection"],
-                          manual_address: post["manual_address"],
-                          name: post["name"],
-                          uid: post["uid"])));
+                    pm: PostModel(
+                      url: post["url"],
+                      des: post["des"],
+                      ltlg: Ltlg(post["lat"], post["lng"]),
+                      time: post["time"],
+                      infection: post["infection"],
+                      manual_address: post["manual_address"],
+                      name: post["name"],
+                      uid: post["uid"],
+                      pId: post["pId"],
+                      token: post["token"],),),);
+                }
               }
               if (posts.isEmpty) {
                 return Center(

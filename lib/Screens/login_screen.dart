@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/user_model.dart';
@@ -18,11 +19,18 @@ class _LoginScreenState extends State<LoginScreen> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
   late UserModel myData;
+  bool isLoading = false;
+  late String userToken;
 
   signIn(email, pass) async {
+    setState(() {
+      isLoading = true;
+    });
     final scaffold = ScaffoldMessenger.of(context);
-
+    print("object");
     try{
+      userToken = await getAndSetToken();
+
       await auth.signInWithEmailAndPassword(email: email, password: pass);
 
         final currentUser = auth.currentUser;
@@ -31,14 +39,15 @@ class _LoginScreenState extends State<LoginScreen> {
           final data = await firestore.collection("Users").doc(uid).get();
 
           setState((){
-            myData = UserModel(uid: uid, email: email, name: data["name"], role: data["role"]);
+          myData = UserModel(uid: uid, email: email, name: data["name"], role: data["role"]);
             MyRoutes.myData = myData;
             firestore.collection("Users").doc(uid).set(
                 {
                   "name" : myData.name,
                   "email" : myData.email,
                   "uid" : myData.uid,
-                  "role" : myData.role
+                  "role" : myData.role,
+                  "token" : userToken,
                 }
             );
           });
@@ -56,6 +65,20 @@ class _LoginScreenState extends State<LoginScreen> {
       ),);
     }
 
+    setState(() {
+      isLoading = false;
+    });
+
+  }
+
+  Future<String> getAndSetToken() async {
+    await FirebaseMessaging.instance.getToken().then((token){
+      setState((){
+        userToken = token!;
+      });
+    });
+
+    return userToken;
   }
 
   @override
@@ -63,7 +86,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.pets),
+        child: isLoading ? Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: LottieBuilder.asset("Animations/paw_loading.json"),
+        ) : Icon(Icons.pets),
         onPressed: () {
           signIn(email, pass);
         },
@@ -91,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          "LOGIN",
+                          "SIGN IN",
                           style: TextStyle(
                               fontSize: 30, fontWeight: FontWeight.bold),
                         ),

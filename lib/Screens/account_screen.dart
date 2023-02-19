@@ -59,6 +59,7 @@ class AccountScreen extends StatelessWidget {
                           if (auth.currentUser!.uid == post["uid"])
                             posts.add(ReusableCard(
                                 pm: PostModel(
+                                    pId: post["pId"],
                                     url: post["url"],
                                     des: post["des"],
                                     ltlg: Ltlg(post["lat"], post["lng"]),
