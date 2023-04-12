@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -50,12 +52,19 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (_scrollController.positions.isNotEmpty) {
-      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-    }
+    startTimer();
     getMyData();
   }
+
+  startTimer() {
+    Timer(Duration(milliseconds: 500), () async {
+      if (_scrollController.positions.isNotEmpty) {
+        _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +105,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                         itemBuilder: (context, index){
                           if(index == texts.length){
                             return Container(
-                              height: MediaQuery.of(context).size.height * 0.1,
+                              height: MediaQuery.of(context).size.height * 0.15,
                             );
                           }
                           else{

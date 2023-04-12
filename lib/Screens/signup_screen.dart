@@ -191,7 +191,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                     ReusabletTextField(
-                      hintText: "Enter your name",
+                      hintText: "Username / Organisation name",
                       icon: Icons.person,
                       getValue: (value) {
                         setState(() {
@@ -260,7 +260,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 horizontal: 10, vertical: 15),
                             child: Center(
                               child: Text(
-                                "USER",
+                                "USER/ORGANISATION",
                                 style: TextStyle(
                                     color: (role == roles.user)
                                         ? Colors.white

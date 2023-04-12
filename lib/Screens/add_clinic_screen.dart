@@ -6,10 +6,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
+import 'package:needy_paw/Screens/clinics_screen.dart';
 
 import '../Models/Ltlg.dart';
 import '../MyWidgets/reusable_textfield.dart';
 import 'map_screen.dart';
+import 'package:location/location.dart';
 
 /*
 Vet's name
@@ -49,6 +51,7 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
     super.initState();
   }
 
+
   Future uploadData() async {
     if (auth.currentUser != null) {
       uid = auth.currentUser!.uid;
@@ -64,7 +67,7 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
       setState(() {
         isLoading = false;
       });
-      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ClinicsScreen()));
 
     }
   }
@@ -198,14 +201,15 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 10,
-              ),
-              Expanded(
-                child: Container(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
                   width: double.infinity,
                   child: GestureDetector(
                     onTap: () {
@@ -223,122 +227,122 @@ class _AddClinicScreenState extends State<AddClinicScreen> {
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Align(
-                child: Text(
-                  "Vet's details",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                SizedBox(
+                  height: 20,
                 ),
-                alignment: AlignmentDirectional.topStart,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ReusabletTextField(
-                getValue: (newValue) {
-                  setState(() {
-                    vname = newValue;
-                  });
-                },
-                hintText: "Vet's name",
-                icon: Icons.person,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ReusabletTextField(
-                getValue: (newValue) {
-                  setState(() {
-                    phoneNumber = newValue.toString();
-                  });
-                },
-                hintText: "Phone number",
-                icon: Icons.call,
-                textInputType: TextInputType.phone,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Align(
-                child: Text(
-                  "Clinic's details",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                alignment: AlignmentDirectional.topStart,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ReusabletTextField(
-                getValue: (newValue) {
-                  setState(() {
-                    cname = newValue;
-                  });
-                },
-                hintText: "Clinic name",
-                icon: Icons.other_houses,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ReusabletTextField(
-                getValue: (newValue) {
-                  setState(() {
-                    manual_address = newValue;
-                  });
-                },
-                hintText: "Clinic's manual address",
-                icon: Icons.location_on,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              GestureDetector(
-                onTap: () async {
-                  ltlg = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MapScreen(),
-                    ),
-                  );
-                  setState(() {});
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.circular(10),
+                Align(
+                  child: Text(
+                    "Vet's details",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: Colors.white,
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              "Tap to set location",
-                              style: TextStyle(color: Colors.white),
+                  alignment: AlignmentDirectional.topStart,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                ReusabletTextField(
+                  getValue: (newValue) {
+                    setState(() {
+                      vname = newValue;
+                    });
+                  },
+                  hintText: "Vet's name",
+                  icon: Icons.person,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                ReusabletTextField(
+                  getValue: (newValue) {
+                    setState(() {
+                      phoneNumber = newValue.toString();
+                    });
+                  },
+                  hintText: "Phone number",
+                  icon: Icons.call,
+                  textInputType: TextInputType.phone,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Align(
+                  child: Text(
+                    "Clinic's details",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  alignment: AlignmentDirectional.topStart,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                ReusabletTextField(
+                  getValue: (newValue) {
+                    setState(() {
+                      cname = newValue;
+                    });
+                  },
+                  hintText: "Clinic name",
+                  icon: Icons.other_houses,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                ReusabletTextField(
+                  getValue: (newValue) {
+                    setState(() {
+                      manual_address = newValue;
+                    });
+                  },
+                  hintText: "Clinic's manual address",
+                  icon: Icons.location_on,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    ltlg = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MapScreen(),
+                      ),
+                    );
+                    setState(() {});
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              color: Colors.white,
                             ),
-                          ),
-                        ],
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                "Tap to set location",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

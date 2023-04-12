@@ -12,49 +12,54 @@ import 'package:needy_paw/Models/post_model.dart';
 import 'package:needy_paw/Models/user_model.dart';
 import 'dart:io';
 import 'package:needy_paw/MyWidgets/reusable_textfield.dart';
+import 'package:needy_paw/Screens/main_screen.dart';
 import 'package:needy_paw/Screens/map_screen.dart';
+import 'package:needy_paw/Screens/pet_stores_screen.dart';
 import 'package:needy_paw/my_routes.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../Classes/get_post_time.dart';
+import '../Models/store_model.dart';
 
-class AddAnimalScreen extends StatefulWidget {
+class AddStoreScreen extends StatefulWidget {
   @override
-  State<AddAnimalScreen> createState() => _AddAnimalScreenState();
+  State<AddStoreScreen> createState() => _AddStoreScreenState();
 }
 
-class _AddAnimalScreenState extends State<AddAnimalScreen> {
+class _AddStoreScreenState extends State<AddStoreScreen> {
   late File file;
   String des = "";
   String infection = "none";
   String manual_address = "none";
+  String phoneNumber = '';
   late String name, uid;
   String url =
       "https://firebasestorage.googleapis.com/v0/b/needy-paws.appspot.com/o/posts%2Fdeveloper.jpeg?alt=media&token=b92f309f-f06e-4d33-8b25-3b7220ca4f2d";
-  Widget textOrImage = Text("Tap here to upload");
+  Widget textOrImage = Text("Tap here to upload image");
   Ltlg ltlg = Ltlg(0.0, 0.0);
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseStorage storage = FirebaseStorage.instance;
   UploadTask? uploadTask;
   late File image;
-  late PostModel pm;
+  late StoreModel sm;
   ImagePicker picker = ImagePicker();
   File? fi;
   FirebaseAuth auth = FirebaseAuth.instance;
   bool isLoading = false;
-  String token = "", pId = "000000000";
+  String token = "", storeId = "000000000";
+  late String store_name;
 
   uploadPost() async {
     setState((){
-      pId = DateTime.now().millisecondsSinceEpoch.toString();
+      storeId = DateTime.now().millisecondsSinceEpoch.toString();
       isLoading = true;
     });
 
     try {
       final data = storage
           .ref()
-          .child("posts")
-          .child(pId);
+          .child("stores")
+          .child(storeId);
       uploadTask = data.putFile(fi!);
       final snapshot = await uploadTask?.whenComplete(() => () {});
       url = (await snapshot?.ref.getDownloadURL())!;
@@ -89,37 +94,34 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   }
 
   uploadData() async {
-    pm = PostModel(
+    sm = StoreModel(
         url: url,
         des: des,
         ltlg: ltlg,
         time: GetPostTime().getTime(context, DateTime.now()),
-        infection: (infection == "") ? "none" : infection,
         manual_address: manual_address,
         name: name,
         uid: uid,
-        pId: pId,
-        token: token);
+        storeId: storeId, phoneNumber: phoneNumber);
 
     try {
-      await firestore.collection("Posts").doc(pm.pId).set({
-        "des": pm.des,
-        "url": pm.url,
-        "lat": pm.ltlg.lat,
-        "lng": pm.ltlg.lng,
-        "time": pm.time,
-        "infection": pm.infection,
-        "manual_address": pm.manual_address,
-        "name": pm.name,
-        "uid": pm.uid,
-        "pId" : pm.pId,
-        "token" : pm.token
+      await firestore.collection("Stores").doc(sm.storeId).set({
+        "des": sm.des,
+        "url": sm.url,
+        "lat": sm.ltlg.lat,
+        "lng": sm.ltlg.lng,
+        "time": sm.time,
+        "manual_address": sm.manual_address,
+        "name": store_name,
+        "uid": sm.uid,
+        "storeId" : sm.storeId,
+        'phoneNumber'  : sm.phoneNumber,
       });
 
       setState(() {
         isLoading = false;
       });
-      Navigator.pushNamed(context, MyRoutes.main);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => PetStoresScreen()));
       // selectImg();
       // uploadPost();
     } catch (e) {
@@ -159,16 +161,16 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
        return false;
      }
 
-    if(des == "" || des == null){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: Colors.red,
-        content: Text(
-          'Description cannot be empty',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ),);
-      return false;
-    }
+     if(store_name == "" || store_name == null){
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+         backgroundColor: Colors.red,
+         content: Text(
+           'Name cannot be empty',
+           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+         ),
+       ),);
+       return false;
+     }
 
     if(manual_address == "none" || manual_address == null){
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -200,7 +202,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Upload Post"),
+        title: Text("Add Store"),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -222,11 +224,10 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
           padding: const EdgeInsets.all(10.0),
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   height: MediaQuery.of(context).size.height * 0.3,
-                  width: double.infinity,
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
@@ -246,6 +247,22 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                 SizedBox(
                   height: 10,
                 ),
+                Text("Store name"),
+                SizedBox(
+                  height: 10,
+                ),
+                ReusabletTextField(
+                  getValue: (value) {
+                    setState(() {
+                      store_name = value;
+                    });
+                  },
+                  hintText: "Enter store name",
+                  icon: Icons.store,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Text("Description"),
                 SizedBox(
                   height: 20,
@@ -256,8 +273,24 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                       des = value;
                     });
                   },
-                  hintText: "Enter the description",
+                  hintText: "Enter store description",
                   icon: Icons.description,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text("Phone number"),
+                SizedBox(
+                  height: 20,
+                ),
+                ReusabletTextField(
+                  getValue: (value) {
+                    setState(() {
+                      phoneNumber = value;
+                    });
+                  },
+                  hintText: "Enter number ignoring +91",
+                  icon: Icons.phone,
                 ),
                 SizedBox(
                   height: 20,
@@ -317,22 +350,6 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text("Is it infected ? (optional)"),
-                SizedBox(
-                  height: 20,
-                ),
-                ReusabletTextField(
-                  getValue: (value) {
-                    setState(() {
-                      infection = value;
-                    });
-                  },
-                  hintText: "Leave this blank if none",
-                  icon: Icons.coronavirus,
                 ),
               ],
             ),

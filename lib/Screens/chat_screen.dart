@@ -158,7 +158,6 @@ class _ChatScreenState extends State<ChatScreen> {
                         },
                       ),
                     );
-
                   }
                   else{
                     return Text("No data");

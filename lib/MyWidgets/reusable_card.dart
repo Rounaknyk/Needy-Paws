@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -125,6 +126,16 @@ class _ReusableCardState extends State<ReusableCard> {
                     SizedBox(
                       height: 10,
                     ),
+                    // CachedNetworkImage(
+                    //   imageUrl: widget.pm.url,
+                    //   progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    //       Center(
+                    //         child: LottieBuilder.asset(
+                    //           "Animations/paw_loading.json",
+                    //           width: MediaQuery.of(context).size.width * 0.5,
+                    //         ),
+                    //       ),
+                    // ),
                     Image.network(
                       widget.pm.url,
                       loadingBuilder: (context, child, loadingProgress) {

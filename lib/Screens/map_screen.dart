@@ -102,6 +102,7 @@ class _MapScreenState extends State<MapScreen> {
   getCurrentLocation() async {
     Location loc = Location();
     await loc.getLocation().then((value) {
+
       locationData = value;
       if(locationData != null) {
         ltlg = Ltlg(locationData!.latitude!, locationData!.longitude!);

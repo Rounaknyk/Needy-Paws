@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:needy_paw/Models/clinic_model.dart';
+import 'package:needy_paw/Models/store_model.dart';
 import 'package:needy_paw/MyWidgets/reusable_button.dart';
 import 'package:needy_paw/Screens/clinic_screen.dart';
 
 import '../Models/Ltlg.dart';
+import '../Screens/pet_store_screen.dart';
 
-class ClinicCard extends StatelessWidget {
-  ClinicCard(
-      {required this.cname,
-      required this.vname,
+class StoreCard extends StatelessWidget {
+  StoreCard(
+      {required this.name,
+      required this.des,
       required this.manual_address,
       required this.url,
       required this.ltlg,
+        required this.time,
       required this.phoneNumber});
-  late String cname, vname, manual_address, url, phoneNumber;
+  late String name, des, manual_address, url, phoneNumber, time;
   late Ltlg ltlg;
   bool loaded = false;
 
@@ -68,19 +71,19 @@ class ClinicCard extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: Text(
-                            cname,
+                            name,
                             maxLines: 1,
                             style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold, ),
+                                fontSize: 15, fontWeight: FontWeight.bold),
                           ),
                         ),
                         Expanded(
                           child: Text(
                             manual_address,
+                            maxLines: 1,
                             style: TextStyle(fontSize: 13),
                           ),
                         ),
@@ -94,14 +97,14 @@ class ClinicCard extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ClinicScreen(
-                                    cm: ClinicModel(
-                                        vname: vname,
-                                        cname: cname,
+                              builder: (context) => PetStoreScreen(
+                                    sm: StoreModel(
+                                        des: des,
+                                        name: name,
                                         manual_address: manual_address,
                                         ltlg: ltlg,
                                         phoneNumber: phoneNumber,
-                                        url: url,),
+                                        url: url, time: '', uid: '', storeId: '',),
                                   )));
                     }),
               ],
