@@ -37,7 +37,7 @@ class _LocateScreenState extends State<LocateScreen> {
 
      PolylinePoints points = PolylinePoints();
      PolylineResult res = await points.getRouteBetweenCoordinates(
-         "AIzaSyDwniEM6ZWWq5cz3dr7MRWzogib9fNnQ6g", PointLatLng(currentLocation!.latitude!, currentLocation!.longitude!), PointLatLng(widget.ltlg.lat, widget.ltlg.lng));
+         googleApiKey: "AIzaSyDwniEM6ZWWq5cz3dr7MRWzogib9fNnQ6g", request: PolylineRequest(origin: PointLatLng(currentLocation!.latitude!, currentLocation!.longitude!), destination: PointLatLng(widget.ltlg.lat, widget.ltlg.lng), mode: TravelMode.driving),);
 
      if(res.points.isNotEmpty){
        res.points.forEach((PointLatLng point) {

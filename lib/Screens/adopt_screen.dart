@@ -33,9 +33,8 @@ class _AdoptScreenState extends State<AdoptScreen> {
 
   setPolylines() async {
     PolylineResult result = await polyPoints.getRouteBetweenCoordinates(
-        "AIzaSyDwniEM6ZWWq5cz3dr7MRWzogib9fNnQ6g",
-        PointLatLng(15.292759706426065, 74.11975152790546),
-        PointLatLng(widget.pm.ltlg.lat, widget.pm.ltlg.lng));
+        googleApiKey: "AIzaSyDwniEM6ZWWq5cz3dr7MRWzogib9fNnQ6g",
+        request: PolylineRequest(origin: PointLatLng(15.292759706426065, 74.11975152790546), destination: PointLatLng(widget.pm.ltlg.lat, widget.pm.ltlg.lng), mode: TravelMode.driving));
     if (result.status == "OK") {
       print("OK");
       result.points.forEach((element) {
